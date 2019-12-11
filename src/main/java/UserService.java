@@ -3,6 +3,7 @@ import model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
 
@@ -19,7 +20,7 @@ public class UserService {
         user.setLastName(lastName);
         user.setLogin(login);
         user.setPassword(password);
-        user.setToken(user.tokenGenerate());
+        user.setToken(tokenGenerate());
         userDao.insert(user);
         return user;
     }
@@ -39,10 +40,15 @@ public class UserService {
 
     public boolean validateToken(String token) {
         for (User item : userList) {
-            if (item.equals(token)) {
+            if (item.getToken().equals(token)) {
                 return true;
             }
         }
         return false;
     }
+    private String tokenGenerate() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
+    }
+
 }
