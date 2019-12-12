@@ -1,28 +1,21 @@
 package database;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import model.User;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class DataBase {
 
     private List<User> userList = new ArrayList<User>();
-
     //добавление сразу с сохраниением в файл
-    public void addUser(User user) {
+    public void addUser(User user) throws IOException {
         userList.add(user);
-        try {
-            ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(new File("test.txt")));
-            ous.writeObject(userList);
-            ous.close();
-        } catch (FileNotFoundException fe) {
-            fe.printStackTrace();
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(new File("C:\\projects\\testData.txt"), userList);
     }
 
     public List<User> getUserList() {

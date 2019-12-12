@@ -1,8 +1,10 @@
 package model;
 
-import java.io.Serializable;
-import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
+import java.io.Serializable;
+
+@JsonAutoDetect
 public class User implements Serializable {
     private String firstName;
     private String lastName;
