@@ -1,7 +1,7 @@
 import dao.UserDaoImpl;
+import database.DataBase;
 import model.User;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,9 +10,8 @@ import java.util.UUID;
  */
 public class UserService {
 
-    //todo: перенести хранение списков отдельно, под вид базы данных
-    private List<User> userList = new ArrayList<User>();
     private UserDaoImpl userDao = new UserDaoImpl();
+    private DataBase db = new DataBase();
 
     public User createUser(String firstName, String lastName, String login, String password) {
         User user = new User();
@@ -35,17 +34,18 @@ public class UserService {
     }
 
     public List<User> getUserList() {
-        return userList;
+        return db.getUserList();
     }
 
     public boolean validateToken(String token) {
-        for (User item : userList) {
+        for (User item : db.getUserList()) {
             if (item.getToken().equals(token)) {
                 return true;
             }
         }
         return false;
     }
+
     private String tokenGenerate() {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
