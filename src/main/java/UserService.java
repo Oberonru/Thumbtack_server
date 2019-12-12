@@ -1,7 +1,10 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.UserDaoImpl;
 import database.DataBase;
 import model.User;
+import request.RegisterUserDtoRequest;
 
+import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,6 +15,64 @@ public class UserService {
 
     private UserDaoImpl userDao = new UserDaoImpl();
     private DataBase db = new DataBase();
+    private ObjectMapper mapper = new ObjectMapper();
+
+    /**
+     * Производит всю необходимую инициализацию и запускает сервер.
+     * savedDataFileName - имя файла, в котором было сохранено состояние сервера.  Если savedDataFileName == null,
+     * восстановление состояния не производится, сервер стартует “с нуля”.
+     *
+     * @param savedDataFileName
+     */
+    public void startServer(String savedDataFileName) throws Exception {
+        /**
+         * Будет лучше, если сам сервер ниекаких операций производить не будет, а будет делегировать из
+         * соответствующему сервису
+         */
+    }
+
+    /**
+     * Останавливает сервер и записывает все его содержимое в файл сохранения с именем savedDataFileName.
+     * Если savedDataFileName == null, запись содержимого не производится.
+     *
+     * @param savedDataFileName
+     */
+    public void stopServer(String savedDataFileName) throws Exception {
+
+    }
+
+    /**
+     * Регистрирует радиослушателя на сервере. requestJsonString содержит данные о радиослушателе, необходимые для
+     * регистрации.  Метод при успешном выполнении возвращает json с единственным элементом “token”. Если же команду по
+     * какой-то причине выполнить нельзя, возвращает json с элементом “error”
+     * При регистрации (метод registerUser) радиослушателя возвращаемая строка (при успешном выполнении)
+     * должна обязательно содержать поле “token” - уникальный номер, присвоенный этому радиослушателю
+     * в результате регистрации.
+     *
+     * @param requestJsonString
+     * @return
+     * @throws Exception
+     */
+
+    public String registerUser(String requestJsonString) throws Exception {
+        /**
+         *..... Итак, мы создали экземпляр класса модели. В этом экземпляре данные корректные в соответствии с
+         * нашими требованиям, так как мы создавали его только в том случае, если экземпляр класса запроса прошел
+         * проверку.
+         * Те перед созданием экземпляра класса "модели" должна быть проверка на валидность данных?
+         */
+        RegisterUserDtoRequest request = mapper.readValue(requestJsonString, RegisterUserDtoRequest.class);
+//
+//        //todo: в условии говорится, что класс сервиса может проверять на валидность данных для регистрации
+//        if (!request.verifyName(request.getFirstName())) {
+//            return "{error}";
+//        }
+//        User registredUser = userService.
+//                createUser(request.getFirstName(), request.getLastName(), request.getLogin(), request.getPassword());
+//        //todo:токен уже должен быть в request? и  у него нужно вызывать метод genToken?
+//        token = "{\"token\":" + "\"" + registredUser.getToken() + "\"}";
+        return null;
+    }
 
     public User createUser(String firstName, String lastName, String login, String password) {
         User user = new User();
