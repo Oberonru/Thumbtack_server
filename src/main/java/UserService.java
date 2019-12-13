@@ -63,18 +63,20 @@ public class UserService {
          * Те перед созданием экземпляра класса "модели" должна быть проверка на валидность данных?
          */
         RegisterUserDtoRequest request = mapper.readValue(requestJsonString, RegisterUserDtoRequest.class);
-        //todo:тут должна быть проверка на валидность данных для регистрации
+        //todo:проверка на валидность слишком простая?
         if (!verifyName(request.getFirstName()) || !verifyName(request.getLastName()) ||
                 !verifyName(request.getLogin())) {
             return "{error}";
         }
-        User newUser = createUser(request.getFirstName(), request.getLastName(), request.getLogin(),
+        User newUser = createUserWithToken(request.getFirstName(), request.getLastName(), request.getLogin(),
                 request.getPassword());
+        //Если все данные пользователя нормальные, то он создался, ему присвое оригинальный токен-> нужно его добавить в бд?!
+        addToDataBase(newUser);
         String token = "{\"token\":" + "\"" + newUser.getToken() + "\"}";
         return token;
     }
 
-    public User createUser(String firstName, String lastName, String login, String password) {
+    public User createUserWithToken(String firstName, String lastName, String login, String password) {
         User user = new User();
         user.setFirstName(firstName);
         user.setLastName(lastName);
