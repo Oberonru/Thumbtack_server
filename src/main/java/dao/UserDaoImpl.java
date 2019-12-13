@@ -1,12 +1,17 @@
 package dao;
 
-import model.User;
 import database.DataBase;
+import model.User;
+
 public class UserDaoImpl implements UserDao {
 
-    private DataBase dataBase = new DataBase();
+    private DataBase dataBase;
 
     public void insert(User user) {
-        dataBase.addUser(user);
+        try {
+            dataBase.addUser(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
