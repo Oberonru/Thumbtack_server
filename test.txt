@@ -1,1 +1,1 @@
-[{"firstName":"Uasja","lastName":"Pupyakin","login":"Pupyan","password":"pup123","token":"65ad572f-26f1-4794-b70a-a3712d5ca308"}]
+[{"firstName":"Uasja","lastName":"Pupyakin","login":"Pupyan","password":"pup123","token":"5a3b0c10-4dd8-4818-8afc-11b5954a95f8"},{"firstName":"Boryaha","lastName":"Mordatii","login":"bormord","password":"8765","token":"75dfbc0e-1646-43e7-ac1c-33b124f94f52"}]

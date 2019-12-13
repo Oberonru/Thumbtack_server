@@ -1,6 +1,8 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.UserDaoImpl;
+import database.DataBase;
 import model.User;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -21,6 +23,19 @@ public class TestDataBase {
         for (User u : deserializeUser) {
             System.out.println(u.getFirstName());
         }
+    }
+
+    @Test
+    public void test_loadDataToCache() {
+        DataBase db = new DataBase();
+        UserService userService = new UserService();
+        UserDaoImpl userDao = new UserDaoImpl();
+        User vasek = userService.createUserWithToken("Uasja", "Pupyakin", "Pupyan","pup123");
+        User boryan = userService.createUserWithToken("Boryaha", "Mordatii","bormord", "8765");
+        userDao.insert(vasek);
+        userDao.insert(boryan);
+        db.loadDataToCache();
+        Assert.assertEquals(db.getUserList().size(), 2);
     }
 
 

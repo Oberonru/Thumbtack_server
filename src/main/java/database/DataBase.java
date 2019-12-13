@@ -11,16 +11,39 @@ import java.util.List;
 public class DataBase {
 
     private List<User> userList = new ArrayList<User>();
-    //добавление сразу с сохраниением в файл
-    public void addUser(User user) throws IOException {
+    private ObjectMapper mapper = new ObjectMapper();
+
+    /**
+     * После того как метод класса DataBase произвел операцию с базой данных, он возвращает какой то результат
+     * классу UserDataImpl или иному DAO классу.....а то уже в свою очередь передаёт результат классу сервиса, а класс
+     * сервиса но основе его создает какой то запрос (RegisterUserDtoRequest, RegisterSongDtoRequest и тд)
+     * todo:метод нужно переделать, должен возвращать
+     */
+    public boolean addUser(User user) {
         userList.add(user);
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(new File("C:\\projects\\testData.txt"), userList);
+        try {
+            mapper.writeValue(new File("test.txt"), userList);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public List<User> getUserList() {
         return userList;
     }
 
-
+    /**
+     * Читает данные из файла (у меня test.txt) и инициализирует список userList
+     */
+    public void loadDataToCache() {
+        try {
+            User[] users = mapper.readValue(new File("test.txt"), User[].class);
+            for (User u : users) {
+                userList.add(u);
+            }
+        } catch (IOException e) {
+        }
+    }
 }
