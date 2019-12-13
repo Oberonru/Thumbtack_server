@@ -59,8 +59,7 @@ public class UserService {
 
         RegisterUserDtoRequest request = mapper.readValue(requestJsonString, RegisterUserDtoRequest.class);
         //todo:проверка на валидность слишком простая?
-        if (!verifyName(request.getFirstName()) || !verifyName(request.getLastName()) ||
-                !verifyName(request.getLogin())) {
+        if (!request.validate(request.getFirstName(), request.getLastName(), request.getLogin(), request.getPassword())) {
             return "{error}";
         }
         /**
@@ -92,10 +91,6 @@ public class UserService {
 
     public void addToDataBase(User user) {
         userDao.insert(user);
-    }
-    public boolean verifyAll(String firtName, String lastName, String login, String password) {
-        //todo:методы  verify нужно для каждого варианта сделать по своему
-        return verifyName(firtName) && verifyName(lastName) && verifyName(login) && verifyName(password);
     }
 
     private boolean verifyName(String name) {

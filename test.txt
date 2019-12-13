@@ -1,1 +1,1 @@
-[{"firstName":"Uasya","lastName":"Pupkin","login":"uaSek","password":"123s","token":"8aeb06c1-4238-450e-b9a2-43ae401016ad"}]
+[{"firstName":"Uasya","lastName":"Pupkin","login":"uaSek","password":"123s","token":"c58c0505-a388-4c6f-9202-db4d812a0244"}]
