@@ -28,18 +28,34 @@ public class Server {
     private static boolean isStarted;
 
     private String token;
+    /**
+     * Производит всю необходимую инициализацию и запускает сервер.
+     * savedDataFileName - имя файла, в котором было сохранено состояние сервера.  Если savedDataFileName == null,
+     * восстановление состояния не производится, сервер стартует “с нуля”.
+     *
+     * @param savedDataFileName
+     */
+    public void startServer(String savedDataFileName) throws Exception {
+        if (savedDataFileName == null) {
+            //todo:каким макаром он так должен стартовать, что тут реализовывать?
+            System.out.println("Сервер стартует с нуля");
+        }
 
-    public static void main(String[] args) throws Exception {
+    }
+
+    /**
+     * Останавливает сервер и записывает все его содержимое в файл сохранения с именем savedDataFileName.
+     * Если savedDataFileName == null, запись содержимого не производится.
+     *
+     * @param savedDataFileName
+     */
+    public void stopServer(String savedDataFileName) throws Exception {
+
     }
 
 
-
-
-
-
-
-
-
+    public static void main(String[] args) throws Exception {
+    }
 
     //это мой метод, для того чтобы записать тестовую жсон строку в файл
     private static void saveToFile(Object obj, File fileName) {

@@ -4,7 +4,6 @@ import database.DataBase;
 import model.User;
 import request.RegisterUserDtoRequest;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -16,31 +15,6 @@ public class UserService {
     private UserDaoImpl userDao = new UserDaoImpl();
     private DataBase db = new DataBase();
     private ObjectMapper mapper = new ObjectMapper();
-
-    /**
-     * Производит всю необходимую инициализацию и запускает сервер.
-     * savedDataFileName - имя файла, в котором было сохранено состояние сервера.  Если savedDataFileName == null,
-     * восстановление состояния не производится, сервер стартует “с нуля”.
-     *
-     * @param savedDataFileName
-     */
-    public void startServer(String savedDataFileName) throws Exception {
-        if (savedDataFileName == null) {
-            //todo:каким макаром он так должен стартовать, что тут реализовывать?
-            System.out.println("Сервер стартует с нуля");
-        }
-
-    }
-
-    /**
-     * Останавливает сервер и записывает все его содержимое в файл сохранения с именем savedDataFileName.
-     * Если savedDataFileName == null, запись содержимого не производится.
-     *
-     * @param savedDataFileName
-     */
-    public void stopServer(String savedDataFileName) throws Exception {
-
-    }
 
     /**
      * Регистрирует радиослушателя на сервере. requestJsonString содержит данные о радиослушателе, необходимые для
@@ -56,10 +30,9 @@ public class UserService {
      */
 
     public String registerUser(String requestJsonString) throws Exception {
-
         RegisterUserDtoRequest request = mapper.readValue(requestJsonString, RegisterUserDtoRequest.class);
-        //todo:проверка на валидность слишком простая?
         if (!request.validate(request.getFirstName(), request.getLastName(), request.getLogin(), request.getPassword())) {
+            //todo: некорректная строка, ключ значение - формат json
             return "{error}";
         }
         /**
@@ -74,7 +47,7 @@ public class UserService {
          * Итак мы создали экземпляр класса модели. В этом экземпляре данные корректные в соответствии с нашими
          * требованиями. Экземпляр класса модели мы теперь должны добавить в нашу базу данных.....
          */
-        addToDataBase(newUser);
+        addUserToDataBase(newUser);
         String token = "{\"token\":" + "\"" + newUser.getToken() + "\"}";
         return token;
     }
@@ -89,16 +62,8 @@ public class UserService {
         return user;
     }
 
-    public void addToDataBase(User user) {
+    public void addUserToDataBase(User user) {
         userDao.insert(user);
-    }
-
-    private boolean verifyName(String name) {
-        return name != null && name.length() > 2 && name.length() < 90;
-    }
-
-    public List<User> getUserList() {
-        return db.getUserList();
     }
 
     public boolean validateToken(String token) {
