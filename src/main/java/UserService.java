@@ -56,21 +56,25 @@ public class UserService {
      */
 
     public String registerUser(String requestJsonString) throws Exception {
-        /**
-         *..... Итак, мы создали экземпляр класса модели. В этом экземпляре данные корректные в соответствии с
-         * нашими требованиям, так как мы создавали его только в том случае, если экземпляр класса запроса прошел
-         * проверку.
-         * Те перед созданием экземпляра класса "модели" должна быть проверка на валидность данных?
-         */
+
         RegisterUserDtoRequest request = mapper.readValue(requestJsonString, RegisterUserDtoRequest.class);
         //todo:проверка на валидность слишком простая?
         if (!verifyName(request.getFirstName()) || !verifyName(request.getLastName()) ||
                 !verifyName(request.getLogin())) {
             return "{error}";
         }
+        /**
+         *..... Итак, мы создали экземпляр класса модели. В этом экземпляре данные корректные в соответствии с
+         * нашими требованиям, так как мы создавали его только в том случае, если экземпляр класса запроса прошел
+         * проверку.
+         * Те перед созданием экземпляра класса "модели" должна быть проверка на валидность данных?
+         */
         User newUser = createUserWithToken(request.getFirstName(), request.getLastName(), request.getLogin(),
                 request.getPassword());
-        //Если все данные пользователя нормальные, то он создался, ему присвое оригинальный токен-> нужно его добавить в бд?!
+        /**
+         * Итак мы создали экземпляр класса модели. В этом экземпляре данные корректные в соответствии с нашими
+         * требованиями. Экземпляр класса модели мы теперь должны добавить в нашу базу данных.....
+         */
         addToDataBase(newUser);
         String token = "{\"token\":" + "\"" + newUser.getToken() + "\"}";
         return token;
