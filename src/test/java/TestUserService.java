@@ -18,4 +18,13 @@ public class TestUserService {
         Assert.assertEquals(user.getLogin(), "vasek");
         Assert.assertEquals(user.getPassword(), "12345");
     }
+
+    @Test
+    public void test_registerUser() throws Exception {
+        UserService userService = new UserService();
+        String jsonToRegistr = "{\"firstName\":\"Uasya\",\"lastName\":\"Pupkin\",\"login\":\"uaSek\",\"password\":\"123s\"}";
+        System.out.println(userService.registerUser(jsonToRegistr));
+
+
+    }
 }

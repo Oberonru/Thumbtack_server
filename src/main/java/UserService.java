@@ -4,12 +4,12 @@ import database.DataBase;
 import model.User;
 import request.RegisterUserDtoRequest;
 
-import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
 /**
-
+ * Будет лучше, если сам сервер ниекаких операций производить не будет, а будет делегировать из
+ * соответствующему сервису
  */
 public class UserService {
 
@@ -25,10 +25,11 @@ public class UserService {
      * @param savedDataFileName
      */
     public void startServer(String savedDataFileName) throws Exception {
-        /**
-         * Будет лучше, если сам сервер ниекаких операций производить не будет, а будет делегировать из
-         * соответствующему сервису
-         */
+        if (savedDataFileName == null) {
+            //todo:каким макаром он так должен стартовать, что тут реализовывать?
+            System.out.println("Сервер стартует с нуля");
+        }
+
     }
 
     /**
@@ -62,16 +63,15 @@ public class UserService {
          * Те перед созданием экземпляра класса "модели" должна быть проверка на валидность данных?
          */
         RegisterUserDtoRequest request = mapper.readValue(requestJsonString, RegisterUserDtoRequest.class);
-//
-//        //todo: в условии говорится, что класс сервиса может проверять на валидность данных для регистрации
-//        if (!request.verifyName(request.getFirstName())) {
-//            return "{error}";
-//        }
-//        User registredUser = userService.
-//                createUser(request.getFirstName(), request.getLastName(), request.getLogin(), request.getPassword());
-//        //todo:токен уже должен быть в request? и  у него нужно вызывать метод genToken?
-//        token = "{\"token\":" + "\"" + registredUser.getToken() + "\"}";
-        return null;
+        //todo:тут должна быть проверка на валидность данных для регистрации
+        if (!verifyName(request.getFirstName()) || !verifyName(request.getLastName()) ||
+                !verifyName(request.getLogin())) {
+            return "{error}";
+        }
+        User newUser = createUser(request.getFirstName(), request.getLastName(), request.getLogin(),
+                request.getPassword());
+        String token = "{\"token\":" + "\"" + newUser.getToken() + "\"}";
+        return token;
     }
 
     public User createUser(String firstName, String lastName, String login, String password) {
@@ -81,10 +81,12 @@ public class UserService {
         user.setLogin(login);
         user.setPassword(password);
         user.setToken(tokenGenerate());
-        userDao.insert(user);
         return user;
     }
 
+    public void addToDataBase(User user) {
+        userDao.insert(user);
+    }
     public boolean verifyAll(String firtName, String lastName, String login, String password) {
         //todo:методы  verify нужно для каждого варианта сделать по своему
         return verifyName(firtName) && verifyName(lastName) && verifyName(login) && verifyName(password);
