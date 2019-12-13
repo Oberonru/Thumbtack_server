@@ -25,6 +25,7 @@ public class Server {
 
     private static UserService userService = new UserService();
     private static SongService songService = new SongService();
+    private static DataBase db = new DataBase();
     private static boolean isStarted;
 
     private String token;
@@ -40,7 +41,7 @@ public class Server {
             //todo:каким макаром он так должен стартовать, что тут реализовывать?
             System.out.println("Сервер стартует с нуля");
         }
-
+        db.loadDataToCache();
     }
 
     /**
