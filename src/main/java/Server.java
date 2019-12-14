@@ -42,6 +42,7 @@ public class Server {
             System.out.println("Сервер стартует с нуля");
         }
         db.loadDataToCache();
+        isStarted = true;
     }
 
     /**
@@ -51,7 +52,7 @@ public class Server {
      * @param savedDataFileName
      */
     public void stopServer(String savedDataFileName) throws Exception {
-
+            isStarted = false;
     }
 
 
