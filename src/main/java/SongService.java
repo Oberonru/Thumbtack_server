@@ -1,16 +1,13 @@
+import dao.SongDataImpl;
 import model.Song;
-import request.RegisterSongDtoRequest;
-import response.RegisterSongDtoResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SongService {
-    private List<Song> songList = new ArrayList<Song>();
 
-    public SongService(List<Song> songList) {
-        this.songList = songList;
-    }
+    private SongDataImpl songData = new SongDataImpl();
+
     public SongService() {}
 
     public Song createSong(String songName, String[] composer, String[] author, String musician, int songDuration) {
@@ -20,8 +17,12 @@ public class SongService {
         song.setAuthor(author);
         song.setMusician(musician);
         song.setSongDuration(songDuration);
-        songList.add(song);
         return song;
+    }
+
+    //Добавление песни в базу данных
+    public void addSongToDataBase(Song song) {
+        songData.insert(song);
     }
     /**
      * Радиослушатель добавляет новую песню на сервер. requestJsonString содержит описание песни и token, полученный
