@@ -3,6 +3,7 @@ import dao.UserDaoImpl;
 import database.DataBase;
 import model.User;
 import request.RegisterUserDtoRequest;
+import response.ErrorDtoResponse;
 
 import java.util.UUID;
 
@@ -32,8 +33,9 @@ public class UserService {
     public String registerUser(String requestJsonString) throws Exception {
         RegisterUserDtoRequest request = mapper.readValue(requestJsonString, RegisterUserDtoRequest.class);
         if (!request.validate(request.getFirstName(), request.getLastName(), request.getLogin(), request.getPassword())) {
-            //todo: некорректная строка, ключ значение - формат json
-            return "{error}";
+            ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
+            errorDtoResponse.error = "Params isn't valid";
+            return mapper.writeValueAsString(errorDtoResponse);
         }
         /**
          *..... Итак, мы создали экземпляр класса модели. В этом экземпляре данные корректные в соответствии с
