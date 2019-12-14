@@ -1,21 +1,32 @@
 package request;
 
+import model.Song;
+
 public class RegisterSongDtoRequest {
     private String songName;
     private String[] composer;
     private String[] author;
     private String musician;
-    private int songDuration;
+    private double songDuration;
     private String token;
 
     public RegisterSongDtoRequest(String songName, String[] composer, String[] author, String musician,
-                                  int songDuration, String token) {
+                                  double songDuration, String token) {
         this.songName = songName;
         this.composer = composer;
         this.author = author;
         this.musician = musician;
         this.songDuration = songDuration;
         this.token = token;
+    }
+
+    public boolean validateSong(String songName, String[] composer, String[] author, String musician,
+                                int songDuration) {
+        return validateSongName(songName);
+    }
+
+    private boolean validateSongName(String songName) {
+        return true;
     }
 
     public RegisterSongDtoRequest() {}
@@ -52,11 +63,11 @@ public class RegisterSongDtoRequest {
         this.musician = musician;
     }
 
-    public int getSongDuration() {
+    public double getSongDuration() {
         return songDuration;
     }
 
-    public void setSongDuration(int songDuration) {
+    public void setSongDuration(double songDuration) {
         this.songDuration = songDuration;
     }
 

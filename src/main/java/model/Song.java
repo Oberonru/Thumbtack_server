@@ -5,10 +5,11 @@ public class Song {
     private String[] composer;
     private String[] author;
     private String musician;
-    private int songDuration;
+    private double songDuration;
+    private String token;
 
-    public Song() {}
-
+    public Song() {
+    }
 
     public String getSongName() {
         return songName;
@@ -42,11 +43,19 @@ public class Song {
         this.musician = musician;
     }
 
-    public int getSongDuration() {
+    public double getSongDuration() {
         return songDuration;
     }
 
-    public void setSongDuration(int songDuration) {
+    public void setSongDuration(double songDuration) {
         this.songDuration = songDuration;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
