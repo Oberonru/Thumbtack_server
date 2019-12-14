@@ -1,6 +1,7 @@
 package database;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import model.Song;
 import model.User;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.util.List;
 public class DataBase {
 
     private List<User> userList = new ArrayList<User>();
+    private List<Song> songList = new ArrayList<Song>();
     private ObjectMapper mapper = new ObjectMapper();
 
     /**
@@ -25,6 +27,17 @@ public class DataBase {
             mapper.writeValue(new File("test.txt"), userList);
             return true;
         } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean addSong(Song song) {
+        songList.add(song);
+        try {
+            mapper.writeValue(new File("test.txt"), songList);
+            return true;
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
