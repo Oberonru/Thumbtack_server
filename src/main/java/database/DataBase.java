@@ -19,10 +19,16 @@ public class DataBase {
      * После того как метод класса DataBase произвел операцию с базой данных, он возвращает какой то результат
      * классу UserDataImpl или иному DAO классу.....а то уже в свою очередь передаёт результат классу сервиса, а класс
      * сервиса но основе его создает какой то запрос (RegisterUserDtoRequest, RegisterSongDtoRequest и тд)
-     * todo:метод нужно переделать, должен возвращать
+     * На вход подаётся корректные данные с пользователем, но если пользователь залогинен, то метод должен вернуть
+     * false, а в классе сервиса эта ошибка переводится в Json error
      */
     public boolean addUser(User user) {
-        userList.add(user);
+        for (User element : userList) {
+            if ((!element.getLogin().equals(user.getLogin())) || userList.size() == 0) {
+                userList.add(user);
+            } else return false;
+        }
+
         try {
             mapper.writeValue(new File("test.txt"), userList);
             return true;
@@ -53,8 +59,8 @@ public class DataBase {
     public void loadDataToCache() {
         try {
             User[] users = mapper.readValue(new File("test.txt"), User[].class);
-            for (User u : users) {
-                userList.add(u);
+            for (User user : users) {
+                userList.add(user);
             }
         } catch (IOException e) {
         }
