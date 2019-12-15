@@ -22,19 +22,12 @@ public class DataBase {
      * На вход подаётся корректные данные с пользователем, но если пользователь залогинен, то метод должен вернуть
      * false, а в классе сервиса эта ошибка переводится в Json error
      */
-    public boolean addUser(User user) {
-        for (User element : userList) {
-            if ((!element.getLogin().equals(user.getLogin())) || userList.size() == 0) {
-                userList.add(user);
-            } else return false;
-        }
-
+    public void addUser(User user) {
+        userList.add(user);
         try {
             mapper.writeValue(new File("test.txt"), userList);
-            return true;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
