@@ -4,6 +4,7 @@ import database.DataBase;
 import model.User;
 import request.RegisterUserDtoRequest;
 import response.ErrorDtoResponse;
+import response.RegisterUserDtoResponse;
 
 import java.util.UUID;
 
@@ -14,7 +15,7 @@ import java.util.UUID;
 public class UserService {
 
     private UserDaoImpl userDao = new UserDaoImpl();
-    private DataBase db = new DataBase();
+    private DataBase db = DataBase.getInstance();
     private ObjectMapper mapper = new ObjectMapper();
 
     /**
@@ -32,17 +33,12 @@ public class UserService {
 
     public String registerUser(String requestJsonString) throws Exception {
         RegisterUserDtoRequest request = mapper.readValue(requestJsonString, RegisterUserDtoRequest.class);
-        if (!request.validate(request.getFirstName(), request.getLastName(), request.getLogin(), request.getPassword())) {
+        if (!validate(request.getFirstName(), request.getLastName(), request.getLogin(), request.getPassword())) {
             ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
             errorDtoResponse.error = "Params isn't valid";
             return mapper.writeValueAsString(errorDtoResponse);
         }
-        /**
-         *..... Итак, мы создали экземпляр класса модели. В этом экземпляре данные корректные в соответствии с
-         * нашими требованиям, так как мы создавали его только в том случае, если экземпляр класса запроса прошел
-         * проверку.
-         * Те перед созданием экземпляра класса "модели" должна быть проверка на валидность данных?
-         */
+
         User newUser = createUserWithToken(request.getFirstName(), request.getLastName(), request.getLogin(),
                 request.getPassword());
         /**
@@ -50,7 +46,9 @@ public class UserService {
          * требованиями. Экземпляр класса модели мы теперь должны добавить в нашу базу данных.....
          */
         addUserToDataBase(newUser);
-        String token = "{\"token\":" + "\"" + newUser.getToken() + "\"}";
+        RegisterUserDtoResponse response = new RegisterUserDtoResponse();
+        response.setToken(newUser.getToken());
+        String token = mapper.writeValueAsString(response);
         return token;
     }
 
@@ -80,6 +78,24 @@ public class UserService {
     private String tokenGenerate() {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
+    }
+
+    private boolean validate(String firstName, String lastName, String login, String password) {
+        return validateName(firstName) && validateName(lastName) && validateLogin(login) &&
+                validateName(password);
+    }
+
+    private boolean validateName(String name) {
+        return name != null && name.length() > 2 && name.length() < 60;
+    }
+
+    private boolean validateLogin(String login) {
+        for (User user : db.getUserList()) {
+            if (user.getLogin().equals(login)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

@@ -14,6 +14,9 @@ public class DataBase {
     private List<User> userList = new ArrayList<User>();
     private List<Song> songList = new ArrayList<Song>();
     private ObjectMapper mapper = new ObjectMapper();
+    private static DataBase instance;
+
+    private DataBase() {}
 
     /**
      * После того как метод класса DataBase произвел операцию с базой данных, он возвращает какой то результат
@@ -57,5 +60,12 @@ public class DataBase {
             }
         } catch (IOException e) {
         }
+    }
+
+    public static DataBase getInstance() {
+        if (instance == null) {
+            instance = new DataBase();
+        }
+        return instance;
     }
 }

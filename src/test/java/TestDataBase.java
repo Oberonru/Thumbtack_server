@@ -27,7 +27,7 @@ public class TestDataBase {
 
     @Test
     public void test_loadDataToCache() {
-        DataBase db = new DataBase();
+        DataBase db = DataBase.getInstance();
         UserService userService = new UserService();
         UserDaoImpl userDao = new UserDaoImpl();
         User vasek = userService.createUserWithToken("Uasja", "Pupyakin", "Pupyan","pup123");

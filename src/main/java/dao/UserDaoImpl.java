@@ -5,7 +5,7 @@ import model.User;
 
 public class UserDaoImpl implements UserDao {
 
-    private DataBase dataBase;
+    private DataBase dataBase = DataBase.getInstance();
 
     public void insert(User user) {
         try {

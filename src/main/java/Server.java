@@ -25,7 +25,7 @@ public class Server {
 
     private static UserService userService = new UserService();
     private static SongService songService = new SongService();
-    private static DataBase db = new DataBase();
+    private static DataBase db = DataBase.getInstance();
     private static boolean isStarted;
 
     private String token;
