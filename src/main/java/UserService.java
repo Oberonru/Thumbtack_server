@@ -17,6 +17,8 @@ public class UserService {
     private UserDaoImpl userDao = new UserDaoImpl();
     private DataBase db = DataBase.getInstance();
     private ObjectMapper mapper = new ObjectMapper();
+    ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
+
 
     /**
      * Регистрирует радиослушателя на сервере. requestJsonString содержит данные о радиослушателе, необходимые для
@@ -33,9 +35,9 @@ public class UserService {
 
     public String registerUser(String requestJsonString) throws Exception {
         RegisterUserDtoRequest request = mapper.readValue(requestJsonString, RegisterUserDtoRequest.class);
+        errorDtoResponse.error = "Params isn't valid";
         if (!validate(request.getFirstName(), request.getLastName(), request.getLogin(), request.getPassword())) {
-            ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
-            errorDtoResponse.error = "Params isn't valid";
+            //errorDtoResponse.error = "Params isn't valid";
             return mapper.writeValueAsString(errorDtoResponse);
         }
 
@@ -92,6 +94,7 @@ public class UserService {
     private boolean validateLogin(String login) {
         for (User user : db.getUserList()) {
             if (user.getLogin().equals(login)) {
+                errorDtoResponse.error = "login is already defined";
                 return false;
             }
         }
