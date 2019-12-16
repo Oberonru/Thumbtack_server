@@ -5,6 +5,7 @@ import model.Song;
 import model.User;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,8 @@ public class DataBase {
     public void addUser(User user) {
         userList.add(user);
         try {
-            mapper.writeValue(new File("test.txt"), userList);
+            FileWriter fileWriter = new FileWriter(new File("test.txt") ,true);
+            mapper.writeValue(fileWriter, userList);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,7 +39,8 @@ public class DataBase {
     public boolean addSong(Song song) {
         songList.add(song);
         try {
-            mapper.writeValue(new File("test.txt"), songList);
+            FileWriter fileWriter = new FileWriter(new File("test.txt") ,true);
+            mapper.writeValue(fileWriter, songList);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
