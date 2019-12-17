@@ -23,7 +23,7 @@ import java.io.IOException;
  */
 public class Server {
 
-    private static UserService userService = new UserService();
+    private static UserService userService;
     private static SongService songService = new SongService();
     private static DataBase db = DataBase.getInstance();
     private static boolean isStarted;
@@ -38,8 +38,7 @@ public class Server {
      */
     public void startServer(String savedDataFileName) throws Exception {
         if (savedDataFileName == null) {
-            //todo:каким макаром он так должен стартовать, что тут реализовывать?
-            System.out.println("Сервер стартует с нуля");
+            userService = new UserService();
         }
         db.loadDataToCache();
         isStarted = true;
