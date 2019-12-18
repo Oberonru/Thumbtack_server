@@ -34,7 +34,7 @@ public class TestDataBase {
         User boryan = userService.createUserWithToken("Boryaha", "Mordatii","bormord", "8765");
         userDao.insert(vasek);
         userDao.insert(boryan);
-        db.loadDataToCache();
+        db.loadDataToCache("test.txt");
         Assert.assertEquals(db.getUserList().size(), 2);
     }
 

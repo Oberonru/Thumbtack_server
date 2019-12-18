@@ -1,1 +1,13 @@
-[{"firstName":"Uasja","lastName":"Pupyakin","login":"Pupyan","password":"pup123","token":"5a3b0c10-4dd8-4818-8afc-11b5954a95f8"},{"firstName":"Boryaha","lastName":"Mordatii","login":"bormord","password":"8765","token":"75dfbc0e-1646-43e7-ac1c-33b124f94f52"}]
+[ {
+  "firstName" : "Uasya",
+  "lastName" : "Pupkin",
+  "login" : "uaSek",
+  "password" : "123s",
+  "token" : "8c1bc0f8-5d8f-4891-ac06-f44865b86e9b"
+}, {
+  "firstName" : "Uasya2",
+  "lastName" : "Pupkin2",
+  "login" : "uaSek2",
+  "password" : "123s",
+  "token" : "cf37dc16-8054-441e-87ec-52e02e89dfa0"
+} ]

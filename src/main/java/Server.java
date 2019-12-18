@@ -36,7 +36,7 @@ public class Server {
         if (savedDataFileName == null) {
             userService = new UserService();
         }
-        db.loadDataToCache();
+        db.loadDataToCache(savedDataFileName);
         isStarted = true;
     }
 
@@ -50,10 +50,11 @@ public class Server {
         isStarted = false;
     }
 
-    public void registerUser(String registerUserJson) throws Exception {
+    public String registerUser(String registerUserJson) throws Exception {
         if (isStarted) {
-            userService.registerUser(registerUserJson);
+        String token = userService.registerUser(registerUserJson);
         }
+        return token;
     }
 
     public static void main(String[] args) throws Exception {
