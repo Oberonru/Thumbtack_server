@@ -36,7 +36,7 @@ public class TestUserService {
                 "\"password\":\"3432s3s\"}";
         String jsonResponse = userService.registerUser(requestJsonString);
         String jsonResponse2 = userService.registerUser(requestJsonString2);
-       //todo: тут нужно делать какую то проверку
+        //todo: тут нужно делать какую то проверку
 
     }
 
@@ -68,5 +68,15 @@ public class TestUserService {
         UserService userService = new UserService();
         String requestJsonString = "{\"token\" : \"68df9475-5b99-4183-af04-5a9ff380976f\"}";
         Assert.assertTrue(userService.logOut(requestJsonString));
+    }
+
+    //отрабатывает правильно, меняет логин, а как проверять?
+    @Test
+    public void test_logIn() throws Exception {
+        UserService userService = new UserService();
+        Server server = new Server();
+        server.startServer("test.txt");
+        String requestJsonString = "{\"login\" : \"vasilii\", \"password\" : \"123s\"}";
+        userService.logIn(requestJsonString);
     }
 }

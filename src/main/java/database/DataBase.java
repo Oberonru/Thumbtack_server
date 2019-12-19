@@ -55,7 +55,6 @@ public class DataBase {
      * Читает данные из файла (у меня test.txt) и инициализирует список userList
      */
     public void loadDataToCache(String savedDataFileName) {
-        //todo: загружает один список с данными в файле...
         try {
             User[] users = mapper.readValue(new File(savedDataFileName), User[].class);
             for (User user : users) {

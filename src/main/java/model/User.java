@@ -20,10 +20,6 @@ public class User implements Serializable {
     }
 
     public void setFirstName(String firstName) {
-        //логика в модулях не должна присутствовать (в условии прописано)
-//        if (firstName != null && firstName.length() > 2 && firstName.length() < 60) {
-//            this.firstName = firstName;
-//        }
         this.firstName = firstName;
     }
 
