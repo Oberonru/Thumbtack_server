@@ -1,13 +1,15 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dao.SongDataImpl;
+import dao.SongDaoImpl;
 import model.Song;
 import request.RegisterSongDtoRequest;
+import response.ErrorDtoResponse;
 
 public class SongService {
 
-    private SongDataImpl songData = new SongDataImpl();
+    private SongDaoImpl songData = new SongDaoImpl();
     private ObjectMapper mapper = new ObjectMapper();
     private UserService userService = new UserService();
+    private SongDaoImpl songDao = new SongDaoImpl();
 
     public SongService() {
     }
@@ -20,7 +22,6 @@ public class SongService {
         song.setAuthor(author);
         song.setMusician(musician);
         song.setSongDuration(songDuration);
-        //todo:как установить именно тот токен, что сгенерировался в UserService?
         song.setToken(token);
         return song;
     }
@@ -40,14 +41,14 @@ public class SongService {
      */
     public String addSong(String requestJsonString) throws Exception {
         RegisterSongDtoRequest request = mapper.readValue(requestJsonString, RegisterSongDtoRequest.class);
-        //пришёл запрос, с данными песни - так же как и с пользователем: проверить на валидность данных,
-        //в самом запросе и проверить на валидность переданный токен, если он есть в списке пользователей, то типтоп
         Song newSong = createSong(request.getSongName(), request.getComposer(), request.getAuthor(),
                 request.getMusician(), request.getSongDuration(), request.getToken());
-        if (userService.validateToken(request.getToken())) {
-            return "{}";
+        if (!userService.validateToken(request.getToken())) {
+            ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
+            errorDtoResponse.error = "Token in invalid";
+            return mapper.writeValueAsString(errorDtoResponse);
         }
-
-        return null;
+        songData.insert(newSong);
+        return "{}";
     }
 }
