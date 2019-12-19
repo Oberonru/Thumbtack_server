@@ -2,10 +2,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.UserDaoImpl;
 import database.DataBase;
 import model.User;
+import request.LogOutDtoRequest;
 import request.RegisterUserDtoRequest;
 import response.ErrorDtoResponse;
 import response.RegisterUserDtoResponse;
 
+import javax.jws.soap.SOAPBinding;
+import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -18,7 +22,6 @@ public class UserService {
     private DataBase db = DataBase.getInstance();
     private ObjectMapper mapper = new ObjectMapper();
     ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
-
 
     /**
      * Регистрирует радиослушателя на сервере. requestJsonString содержит данные о радиослушателе, необходимые для
@@ -54,6 +57,34 @@ public class UserService {
         return token;
     }
 
+    /**
+     * Зарегистрированный на сервере радиослушатель может выйти с сервера. Вышедший с сервера радиослушатель может
+     * войти на сервер снова. При этом ему достаточно ввести свои логин и пароль.
+     * 	Зарегистрированный на сервере радиослушатель может покинуть сервер, в этом случае вся информация о нем удаляется
+     *
+     * 	////////////////////////////////
+     * 	для выполнения опеарции нужно предъявить  джейсон с токеном? найти в бд и присвоить null?
+     */
+
+    public boolean logOut(String requestJsonString) throws IOException {
+            LogOutDtoRequest logOutRequest = mapper.readValue(requestJsonString, LogOutDtoRequest.class);
+            if (validateToken(logOutRequest.getToken())) {
+                //todo: понятно, если найдёт валидный токен, то нужно ещё раз пробегать, чтобы найти во второй раз
+                //todo: пользователя с нужным токеном и обнулить его, как это сделать за раз?
+                for (User user : db.getUserList()) {
+                    if (logOutRequest.getToken().equals(user.getToken())) {
+                        user.setToken(null);
+                        mapper.writerWithDefaultPrettyPrinter().writeValue(new File("test.txt"), db.getUserList());
+                        return true;
+                    }
+                }
+            }
+        return false;
+    }
+
+    public void logIn() {
+        //если пользователь зарегистрирован, то можно лигиниться...те после регистрации должен быть флаг?!...
+    }
     public User createUserWithToken(String firstName, String lastName, String login, String password) {
         User user = new User();
         user.setFirstName(firstName);

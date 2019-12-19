@@ -8,8 +8,10 @@ public class TestUserService {
 
     @Test
     //todo:как протестировать, что генерирует?
-    public void test_generateId() {
+    public void test_generateId() throws Exception {
         UserService userService = new UserService();
+        String json = userService.registerUser("{\"firstName\":\"Uasya\",\"lastName\":\"Pupkin\"," +
+                "\"login\":\"uaSek\",\"password\":\"123s\"}");
     }
 
     @Test
@@ -25,10 +27,17 @@ public class TestUserService {
     @Test
     public void test_registerUser() throws Exception {
         UserService userService = new UserService();
-        String requestJsonString = "{\"firstName\":\"Uasya\",\"lastName\":\"Pupkin\",\"login\":\"uaSek\",\"password\":\"123s\"}";
+        Server server = new Server();
+        server.startServer("test.txt");
+        //,..всё тип топ, сервер стартанул у бд есть список пользователей из которого можно извлечь требуемое поле и тд..
+        String requestJsonString = "{\"firstName\":\"Vaska\",\"lastName\":\"Pupkin\",\"login\":\"vasilii\"," +
+                "\"password\":\"123s\"}";
+        String requestJsonString2 = "{\"firstName\":\"Petro\",\"lastName\":\"First\",\"login\":\"petrucsho\"," +
+                "\"password\":\"3432s3s\"}";
         String jsonResponse = userService.registerUser(requestJsonString);
-        //todo:как вытащить токен для проверки?
-        System.out.println(jsonResponse);
+        String jsonResponse2 = userService.registerUser(requestJsonString2);
+       //todo: тут нужно делать какую то проверку
+
     }
 
     @Test
@@ -47,12 +56,17 @@ public class TestUserService {
                 "\"password\":\"123s\"}";
         String requestJsonString2 = "{\"firstName\":\"Vasyuha\",\"lastName\":\"Maklai\",\"login\":\"uaSek\"," +
                 "\"password\":\"yt2\"}";
-
         String jsonResponse = userService.registerUser(requestJsonString);
         String jsonResponse2 = userService.registerUser(requestJsonString2);
-        System.out.println(jsonResponse);
-        System.out.println(jsonResponse2);
-
+        Assert.assertEquals(jsonResponse2, "{\"error\":\"login is already defined\"}");
     }
 
+    @Test
+    public void test_logOut() throws Exception {
+        Server server = new Server();
+        server.startServer("test.txt");
+        UserService userService = new UserService();
+        String requestJsonString = "{\"token\" : \"68df9475-5b99-4183-af04-5a9ff380976f\"}";
+        Assert.assertTrue(userService.logOut(requestJsonString));
+    }
 }
