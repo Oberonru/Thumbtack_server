@@ -26,7 +26,6 @@ public class SongService {
         return song;
     }
 
-    //Добавление песни в базу данных
     public void addSongToDataBase(Song song) {
         songData.insert(song);
     }
@@ -41,13 +40,14 @@ public class SongService {
      */
     public String addSong(String requestJsonString) throws Exception {
         RegisterSongDtoRequest request = mapper.readValue(requestJsonString, RegisterSongDtoRequest.class);
-        Song newSong = createSong(request.getSongName(), request.getComposer(), request.getAuthor(),
-                request.getMusician(), request.getSongDuration(), request.getToken());
         if (!userService.validateToken(request.getToken())) {
             ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
             errorDtoResponse.error = "Token in invalid";
             return mapper.writeValueAsString(errorDtoResponse);
         }
+        Song newSong = createSong(request.getSongName(), request.getComposer(), request.getAuthor(),
+                request.getMusician(), request.getSongDuration(), request.getToken());
+
         songData.insert(newSong);
         return "{}";
     }

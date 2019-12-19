@@ -1,9 +1,8 @@
 package database;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import model.Song;
 import model.User;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,11 +11,11 @@ import java.util.List;
 
 public class DataBase {
 
+    @JsonDeserialize(as = ArrayList.class, contentAs = User.class)
     private List<User> userList = new ArrayList<User>();
     private List<Song> songList = new ArrayList<Song>();
     private ObjectMapper mapper = new ObjectMapper();
     private static DataBase instance;
-
     private DataBase() {}
 
     /**
@@ -29,8 +28,8 @@ public class DataBase {
     public void addUser(User user) {
         userList.add(user);
         try {
-            FileWriter fileWriter = new FileWriter(new File("test.txt") ,true);
-            mapper.writeValue(fileWriter, userList);
+            FileWriter fileWriter = new FileWriter(new File("test.txt") ,false);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(fileWriter, userList);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,8 +38,8 @@ public class DataBase {
     public boolean addSong(Song song) {
         songList.add(song);
         try {
-            FileWriter fileWriter = new FileWriter(new File("test.txt") ,true);
-            mapper.writeValue(fileWriter, songList);
+            FileWriter fileWriter = new FileWriter(new File("songFile.txt") ,false);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(fileWriter, songList);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,13 +54,15 @@ public class DataBase {
     /**
      * Читает данные из файла (у меня test.txt) и инициализирует список userList
      */
-    public void loadDataToCache() {
+    public void loadDataToCache(String savedDataFileName) {
+        //todo: загружает один список с данными в файле...
         try {
-            User[] users = mapper.readValue(new File("test.txt"), User[].class);
+            User[] users = mapper.readValue(new File(savedDataFileName), User[].class);
             for (User user : users) {
                 userList.add(user);
             }
         } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
