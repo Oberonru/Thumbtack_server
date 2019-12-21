@@ -30,13 +30,12 @@ public class Server {
      * savedDataFileName - имя файла, в котором было сохранено состояние сервера.  Если savedDataFileName == null,
      * восстановление состояния не производится, сервер стартует “с нуля”.
      *
-     * @param savedDataFileName
+     * @param savedUsereDataFileName
      */
-    public void startServer(String savedDataFileName) throws Exception {
-        if (savedDataFileName == null) {
-            userService = new UserService();
-        }
-        db.loadDataToCache(savedDataFileName);
+
+    public void startServer(String savedUsereDataFileName, String saveSongDataFileName) throws Exception {
+        db.loadUserDataToCache(savedUsereDataFileName);
+        db.loadSongDataToCache(saveSongDataFileName);
         isStarted = true;
     }
 

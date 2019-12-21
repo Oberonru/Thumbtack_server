@@ -3,6 +3,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import model.Song;
 import model.User;
+import response.ErrorDtoResponse;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -58,6 +60,10 @@ public class DataBase {
      * Читает данные из файла (у меня test.txt) и инициализирует список userList
      */
     public void loadUserDataToCache(String savedDataFileName) {
+        if (savedDataFileName == null || new File(savedDataFileName).length() == 0) {
+            System.out.println("Список пользователей пуст, сервер стартует с нуля");
+            return;
+        }
         try {
             User[] users = mapper.readValue(new File(savedDataFileName), User[].class);
             for (User user : users) {
@@ -69,6 +75,10 @@ public class DataBase {
     }
 
     public void loadSongDataToCache(String savedDataFileName) {
+        if (savedDataFileName == null) {
+            System.out.println("Спсиок песен пуст");
+            return;
+        }
         try {
             Song[] songs = mapper.readValue(new File(savedDataFileName), Song[].class);
             for (Song song : songs) {
