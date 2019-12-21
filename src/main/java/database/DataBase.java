@@ -50,17 +50,32 @@ public class DataBase {
     public List<User> getUserList() {
         return userList;
     }
+    public List<Song> getSongList() {
+        return songList;
+    }
 
     /**
      * Читает данные из файла (у меня test.txt) и инициализирует список userList
      */
-    public void loadDataToCache(String savedDataFileName) {
+    public void loadUserDataToCache(String savedDataFileName) {
         try {
             User[] users = mapper.readValue(new File(savedDataFileName), User[].class);
             for (User user : users) {
                 userList.add(user);
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadSongDataToCache(String savedDataFileName) {
+        try {
+            Song[] songs = mapper.readValue(new File(savedDataFileName), Song[].class);
+            for (Song song : songs) {
+                songList.add(song);
+            }
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
