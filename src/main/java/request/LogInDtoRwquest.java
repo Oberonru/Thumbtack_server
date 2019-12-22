@@ -8,7 +8,7 @@ public class LogInDtoRwquest {
         return login;
     }
 
-    public boolean getPassword(String password) {
-        return this.password.equals(password);
+    public String getPassword() {
+        return password;
     }
 }

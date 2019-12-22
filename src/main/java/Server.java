@@ -2,6 +2,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import database.DataBase;
 import response.ErrorDtoResponse;
 
+import java.io.IOException;
+
 /**
  * * Будет лучше, если класс Server сам никакие операции выполнять не будет, а будет делегировать их выполнение
  * * соответствующему классу, который мы назовем классом сервиса (например, UserService, SongService и т.д), вызывая
@@ -24,7 +26,6 @@ public class Server {
      * Производит всю необходимую инициализацию и запускает сервер.
      * savedDataFileName - имя файла, в котором было сохранено состояние сервера.  Если savedDataFileName == null,
      * восстановление состояния не производится, сервер стартует “с нуля”.
-     *
      * @param savedDataFileName
      */
 
@@ -36,21 +37,30 @@ public class Server {
     /**
      * Останавливает сервер и записывает все его содержимое в файл сохранения с именем savedDataFileName.
      * Если savedDataFileName == null, запись содержимого не производится.
-     *
      * @param savedDataFileName
      */
     public void stopServer(String savedDataFileName) throws Exception {
         isStarted = false;
+        db.saveData();
     }
 
     public String registerUser(String registerUserJson) throws Exception {
         if (isStarted) {
-        String response = userService.registerUser(registerUserJson);
+            String response = userService.registerUser(registerUserJson);
             return response;
         }
         ObjectMapper mapper = new ObjectMapper();
         errorDtoResponse.error = "Server is not started!";
         return mapper.writeValueAsString(errorDtoResponse);
+    }
+
+    public void logIn(String requestJsonString) throws IOException {
+        userService.logIn(requestJsonString);
+    }
+
+    public void logOut(String requestJsonString) throws IOException {
+        userService.logOut(requestJsonString);
+
     }
 
     public static void main(String[] args) throws Exception {

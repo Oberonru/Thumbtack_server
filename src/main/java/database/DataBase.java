@@ -1,9 +1,10 @@
 package database;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import model.DataBaseModel;
 import model.Song;
 import model.User;
-import response.ErrorDtoResponse;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -18,10 +19,12 @@ public class DataBase {
     private List<Song> songList = new ArrayList<Song>();
     private ObjectMapper mapper = new ObjectMapper();
     private static DataBase instance;
-    private DataBase() {}
+
+    private DataBase() {
+    }
 
     /**
-     * После того как метод класса DataBase произвел операцию с базой данных, он возвращает какой то результат
+     * После того как метод класса DataBaseModel произвел операцию с базой данных, он возвращает какой то результат
      * классу UserDataImpl или иному DAO классу.....а то уже в свою очередь передаёт результат классу сервиса, а класс
      * сервиса но основе его создает какой то запрос (RegisterUserDtoRequest, RegisterSongDtoRequest и тд)
      * На вход подаётся корректные данные с пользователем, но если пользователь залогинен, то метод должен вернуть
@@ -38,9 +41,11 @@ public class DataBase {
 
     public void saveData() {
         try {
-            FileWriter fileWriter = new FileWriter(new File("saveData.json") ,false);
-            mapper.writerWithDefaultPrettyPrinter().writeValue(fileWriter, userList);
-            mapper.writerWithDefaultPrettyPrinter().writeValue(fileWriter, songList);
+            DataBaseModel dbm = new DataBaseModel();
+            dbm.users.addAll(userList);
+            dbm.songs.addAll(songList);
+            FileWriter fileWriter = new FileWriter(new File("saveData.json"), false);
+            mapper.writeValue(fileWriter, dbm);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,15 +60,12 @@ public class DataBase {
             return;
         }
         try {
-            User[] users = mapper.readValue(new File(savedDataFileName), User[].class);
-            for (User user : users) {
-                userList.add(user);
-            }
-            Song[] songs = mapper.readValue(new File(savedDataFileName), Song[].class);
-            for (Song song : songs) {
-                songList.add(song);
-            }
-        } catch (IOException e) {
+            DataBaseModel db = mapper.readValue(new File(savedDataFileName), DataBaseModel.class);
+            userList.clear();
+            songList.clear();
+            userList.addAll(db.users);
+            songList.addAll(db.songs);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -78,6 +80,7 @@ public class DataBase {
     public List<User> getUserList() {
         return userList;
     }
+
     public List<Song> getSongList() {
         return songList;
     }
