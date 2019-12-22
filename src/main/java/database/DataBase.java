@@ -29,23 +29,20 @@ public class DataBase {
      */
     public void addUser(User user) {
         userList.add(user);
-        try {
-            FileWriter fileWriter = new FileWriter(new File("test.txt") ,false);
-            mapper.writerWithDefaultPrettyPrinter().writeValue(fileWriter, userList);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    public boolean addSong(Song song) {
+    public void addSong(Song song) {
+        //generateSongId
         songList.add(song);
+    }
+
+    public void saveData() {
         try {
-            FileWriter fileWriter = new FileWriter(new File("songFile.txt") ,false);
+            FileWriter fileWriter = new FileWriter(new File("saveData.json") ,false);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(fileWriter, userList);
             mapper.writerWithDefaultPrettyPrinter().writeValue(fileWriter, songList);
-            return true;
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
@@ -57,7 +54,7 @@ public class DataBase {
     }
 
     /**
-     * Читает данные из файла (у меня test.txt) и инициализирует список userList
+     * Читает данные из файла (у меня testServerData.json) и инициализирует список userList
      */
     public void loadUserDataToCache(String savedDataFileName) {
         if (savedDataFileName == null || new File(savedDataFileName).length() == 0) {
