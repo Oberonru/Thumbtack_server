@@ -2,6 +2,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.DataBase;
+import response.ErrorDtoResponse;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +22,7 @@ public class Server {
     private static UserService userService = new UserService();
     private static SongService songService = new SongService();
     private static DataBase db = DataBase.getInstance();
+    private ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
     private static boolean isStarted;
 
     private String token;
@@ -51,26 +53,14 @@ public class Server {
 
     public String registerUser(String registerUserJson) throws Exception {
         if (isStarted) {
-        String token = userService.registerUser(registerUserJson);
+        String response = userService.registerUser(registerUserJson);
+            return response;
         }
-        return token;
+        ObjectMapper mapper = new ObjectMapper();
+        errorDtoResponse.error = "Server is not started!";
+        return mapper.writeValueAsString(errorDtoResponse);
     }
 
     public static void main(String[] args) throws Exception {
     }
-
-    //это мой метод, для того чтобы записать тестовую жсон строку в файл
-    private static void saveToFile(Object obj, File fileName) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            mapper.writeValue(fileName, obj);
-        } catch (JsonGenerationException ge) {
-            ge.printStackTrace();
-        } catch (JsonMappingException jme) {
-            jme.printStackTrace();
-        } catch (IOException e) {
-        }
-    }
-
-
 }
