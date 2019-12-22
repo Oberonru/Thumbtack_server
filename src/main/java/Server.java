@@ -1,11 +1,6 @@
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.DataBase;
 import response.ErrorDtoResponse;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * * Будет лучше, если класс Server сам никакие операции выполнять не будет, а будет делегировать их выполнение
@@ -25,19 +20,16 @@ public class Server {
     private ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
     private static boolean isStarted;
 
-    private String token;
-
     /**
      * Производит всю необходимую инициализацию и запускает сервер.
      * savedDataFileName - имя файла, в котором было сохранено состояние сервера.  Если savedDataFileName == null,
      * восстановление состояния не производится, сервер стартует “с нуля”.
      *
-     * @param savedUsereDataFileName
+     * @param savedDataFileName
      */
 
-    public void startServer(String savedUsereDataFileName, String saveSongDataFileName) throws Exception {
-        db.loadUserDataToCache(savedUsereDataFileName);
-        db.loadSongDataToCache(saveSongDataFileName);
+    public void startServer(String savedDataFileName) {
+        db.loadDataToCache(savedDataFileName);
         isStarted = true;
     }
 

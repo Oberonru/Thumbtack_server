@@ -46,17 +46,10 @@ public class DataBase {
         }
     }
 
-    public List<User> getUserList() {
-        return userList;
-    }
-    public List<Song> getSongList() {
-        return songList;
-    }
-
     /**
-     * Читает данные из файла (у меня testServerData.json) и инициализирует список userList
+     * Загружает данные из файла
      */
-    public void loadUserDataToCache(String savedDataFileName) {
+    public void loadDataToCache(String savedDataFileName) {
         if (savedDataFileName == null || new File(savedDataFileName).length() == 0) {
             System.out.println("Список пользователей пуст, сервер стартует с нуля");
             return;
@@ -66,23 +59,11 @@ public class DataBase {
             for (User user : users) {
                 userList.add(user);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void loadSongDataToCache(String savedDataFileName) {
-        if (savedDataFileName == null) {
-            System.out.println("Спсиок песен пуст");
-            return;
-        }
-        try {
             Song[] songs = mapper.readValue(new File(savedDataFileName), Song[].class);
             for (Song song : songs) {
                 songList.add(song);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -93,4 +74,12 @@ public class DataBase {
         }
         return instance;
     }
+
+    public List<User> getUserList() {
+        return userList;
+    }
+    public List<Song> getSongList() {
+        return songList;
+    }
+
 }
