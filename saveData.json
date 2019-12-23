@@ -1,0 +1,31 @@
+{
+  "users" : [ {
+    "firstName" : "Uasya",
+    "lastName" : "Pupkin",
+    "login" : "uaSek",
+    "password" : "123s",
+    "token" : null
+  } ],
+  "songs" : [ {
+    "songName" : "Elochka",
+    "composer" : [ "Zayac", "Volk" ],
+    "author" : [ "Volk", "Zayac" ],
+    "musician" : "Capel'",
+    "songDuration" : 5.0,
+    "token" : "09b7c049-fbc8-4d6b-8b52-8ca2fd5f6714"
+  }, {
+    "songName" : "second",
+    "composer" : [ "BBBB", "AAAA" ],
+    "author" : [ "CCC", "DDD" ],
+    "musician" : "Songer",
+    "songDuration" : 1.0,
+    "token" : "61b51fca-6100-421e-b829-1a9da83faae3"
+  }, {
+    "songName" : "Musjaka",
+    "composer" : [ "Muzyak", "MuzyakMladshoi" ],
+    "author" : [ "OnYe" ],
+    "musician" : "MusyagGroup",
+    "songDuration" : 0.8,
+    "token" : "a6acedd8-213f-4018-b61f-d4b1a0a78418"
+  } ]
+}

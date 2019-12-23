@@ -1,9 +1,9 @@
 package request;
 
 public class LogOutDtoRequest {
-    private String token;
+    private String login;
 
-    public String getToken() {
-        return token;
+    public String getLogin() {
+        return login;
     }
 }

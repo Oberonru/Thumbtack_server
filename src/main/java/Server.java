@@ -17,15 +17,16 @@ import java.io.IOException;
 public class Server {
 
     private static UserService userService = new UserService();
-    private static SongService songService = new SongService();
     private static DataBase db = DataBase.getInstance();
     private ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
     private static boolean isStarted;
+    private boolean isLogined;
 
     /**
      * Производит всю необходимую инициализацию и запускает сервер.
      * savedDataFileName - имя файла, в котором было сохранено состояние сервера.  Если savedDataFileName == null,
      * восстановление состояния не производится, сервер стартует “с нуля”.
+     *
      * @param savedDataFileName
      */
 
@@ -37,6 +38,7 @@ public class Server {
     /**
      * Останавливает сервер и записывает все его содержимое в файл сохранения с именем savedDataFileName.
      * Если savedDataFileName == null, запись содержимого не производится.
+     *
      * @param savedDataFileName
      */
     public void stopServer(String savedDataFileName) throws Exception {
@@ -54,13 +56,22 @@ public class Server {
         return mapper.writeValueAsString(errorDtoResponse);
     }
 
-    public void logIn(String requestJsonString) throws IOException {
-        userService.logIn(requestJsonString);
+    public boolean logIn(String requestJsonString) throws IOException {
+        isLogined = userService.logIn(requestJsonString);
+        return isLogined;
     }
 
     public void logOut(String requestJsonString) throws IOException {
+        isLogined = false;
         userService.logOut(requestJsonString);
+    }
 
+    public String addSong(String requestJsonString) throws Exception {
+        if (isLogined) {
+            SongService songService = new SongService();
+            return songService.addSong(requestJsonString);
+        }
+        return "{\"errror\" : \"login not found\"}";
     }
 
     public static void main(String[] args) throws Exception {
