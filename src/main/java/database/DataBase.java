@@ -45,7 +45,7 @@ public class DataBase {
             dbm.users.addAll(userList);
             dbm.songs.addAll(songList);
             FileWriter fileWriter = new FileWriter(new File("saveData.json"), false);
-            mapper.writeValue(fileWriter, dbm);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(fileWriter, dbm);
         } catch (IOException e) {
             e.printStackTrace();
         }

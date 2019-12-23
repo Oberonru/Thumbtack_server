@@ -76,10 +76,9 @@ public class UserService {
 
     public String logOut(String requestJsonString) throws IOException {
         LogOutDtoRequest logOutRequest = mapper.readValue(requestJsonString, LogOutDtoRequest.class);
-        User user = getUserByToken(logOutRequest.getToken());
+        User user = getUserByLogin(logOutRequest.getLogin());
         if (user != null) {
             user.setToken(null);
-            db.addUser(user);
             return "{}";
         }
         return "{\"error\" : \"user not found\"}";
