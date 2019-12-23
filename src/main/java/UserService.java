@@ -1,5 +1,4 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dao.UserDaoImpl;
 import database.DataBase;
 import model.User;
 import request.LogInDtoRwquest;
@@ -19,15 +18,9 @@ import java.util.UUID;
  */
 public class UserService {
 
-    private UserDaoImpl userDao = new UserDaoImpl();
     private DataBase db = DataBase.getInstance();
     private ObjectMapper mapper = new ObjectMapper();
-    private boolean isRegistred;
     ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
-
-    public boolean isRegistred() {
-        return isRegistred;
-    }
 
     /**
      * Регистрирует радиослушателя на сервере. requestJsonString содержит данные о радиослушателе, необходимые для
@@ -36,10 +29,6 @@ public class UserService {
      * При регистрации (метод registerUser) радиослушателя возвращаемая строка (при успешном выполнении)
      * должна обязательно содержать поле “token” - уникальный номер, присвоенный этому радиослушателю
      * в результате регистрации.
-     *
-     * @param requestJsonString
-     * @return
-     * @throws Exception
      */
 
     public String registerUser(String requestJsonString) throws Exception {
@@ -55,30 +44,26 @@ public class UserService {
         User newUser = createUserWithToken(request.getFirstName(), request.getLastName(), request.getLogin(),
                 request.getPassword());
 
-        addUserToDataBase(newUser);
+        db.addUser(newUser);
         RegisterUserDtoResponse response = new RegisterUserDtoResponse();
         response.setToken(newUser.getToken());
-        String token = mapper.writeValueAsString(response);
-        isRegistred = true;
-        return token;
+        return  mapper.writeValueAsString(response);
     }
 
     /**
      * и радиослушатель, вышедший с сервера, входит на него снова (метод login), он получает новый токен, который может
      * использовать во всех операциях вплоть до нового выхода.
-     * @param requestJsonString
-     * @return
-     * @throws IOException
      */
-    public String logIn(String requestJsonString) throws IOException {
+    public boolean logIn(String requestJsonString) throws IOException {
         LogInDtoRwquest logInRequest = mapper.readValue(requestJsonString, LogInDtoRwquest.class);
         User user = getUserByLogin(logInRequest.getLogin());
-       if (user != null) {
-           user.setToken(generateToken());
-           db.addUser(user);
-           return user.getToken();
-       }
-       else return "{\"error\" : \"login not found\"}";
+        if (user != null) {
+            if (user.getToken() == null) {
+                user.setToken(generateToken());
+            }
+            db.addUser(user);
+            return true;
+        } else return false;
     }
 
     /**
@@ -98,7 +83,7 @@ public class UserService {
             db.addUser(user);
             return "{}";
         }
-        return  "{\"error\" : \"user not found\"}";
+        return "{\"error\" : \"user not found\"}";
     }
 
     public User createUserWithToken(String firstName, String lastName, String login, String password) {
@@ -109,10 +94,6 @@ public class UserService {
         user.setPassword(password);
         user.setToken(generateToken());
         return user;
-    }
-
-    public void addUserToDataBase(User user) {
-        userDao.insert(user);
     }
 
     public User getUserByToken(String token) {
