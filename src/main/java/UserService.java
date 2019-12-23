@@ -61,7 +61,6 @@ public class UserService {
             if (user.getToken() == null) {
                 user.setToken(generateToken());
             }
-            db.addUser(user);
             return true;
         } else return false;
     }
