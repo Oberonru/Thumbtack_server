@@ -3,6 +3,7 @@ package database;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import model.DataBaseModel;
+import model.Raiting;
 import model.Song;
 import model.User;
 
@@ -17,6 +18,7 @@ public class DataBase {
     @JsonDeserialize(as = ArrayList.class, contentAs = User.class)
     private List<User> userList = new ArrayList<User>();
     private List<Song> songList = new ArrayList<Song>();
+    private List<Raiting> raitingList = new ArrayList<Raiting>();
     private ObjectMapper mapper = new ObjectMapper();
     private static DataBase instance;
 
@@ -35,8 +37,11 @@ public class DataBase {
     }
 
     public void addSong(Song song) {
-        //generateSongId
         songList.add(song);
+    }
+
+    public void addRaiting(Raiting raiting) {
+        raitingList.add(raiting);
     }
 
     public void saveData() {
@@ -44,6 +49,7 @@ public class DataBase {
             DataBaseModel dbm = new DataBaseModel();
             dbm.users.addAll(userList);
             dbm.songs.addAll(songList);
+            dbm.raitings.addAll(raitingList);
             FileWriter fileWriter = new FileWriter(new File("saveData.json"), false);
             mapper.writerWithDefaultPrettyPrinter().writeValue(fileWriter, dbm);
         } catch (IOException e) {
@@ -60,11 +66,13 @@ public class DataBase {
             return;
         }
         try {
-            DataBaseModel db = mapper.readValue(new File(savedDataFileName), DataBaseModel.class);
+            DataBaseModel dbm = mapper.readValue(new File(savedDataFileName), DataBaseModel.class);
             userList.clear();
             songList.clear();
-            userList.addAll(db.users);
-            songList.addAll(db.songs);
+            raitingList.clear();
+            userList.addAll(dbm.users);
+            songList.addAll(dbm.songs);
+            raitingList.addAll(dbm.raitings);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,6 +91,10 @@ public class DataBase {
 
     public List<Song> getSongList() {
         return songList;
+    }
+
+    public List<Raiting> getRaitingList() {
+        return raitingList;
     }
 
 }

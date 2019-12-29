@@ -54,15 +54,15 @@ public class UserService {
      * и радиослушатель, вышедший с сервера, входит на него снова (метод login), он получает новый токен, который может
      * использовать во всех операциях вплоть до нового выхода.
      */
-    public boolean logIn(String requestJsonString) throws IOException {
+    public String logIn(String requestJsonString) throws IOException {
         LogInDtoRwquest logInRequest = mapper.readValue(requestJsonString, LogInDtoRwquest.class);
         User user = getUserByLogin(logInRequest.getLogin());
         if (user != null) {
             if (user.getToken() == null) {
                 user.setToken(generateToken());
             }
-            return true;
-        } else return false;
+            return mapper.writeValueAsString(user.getToken());
+        } else  return "{\"error\" : \"login not found\"}";
     }
 
     /**
@@ -84,6 +84,16 @@ public class UserService {
         return "{\"error\" : \"user not found\"}";
     }
 
+    /**
+     * 	Зарегистрированный на сервере радиослушатель может покинуть сервер, в этом случае вся информация о нем
+     * 	удаляется, а список сделанных им предложений обрабатывается как указано ниже.
+     * @param requestJsonString
+     * @return
+     */
+    public String exitToServer(String requestJsonString) {
+        return "fig";
+    }
+
     public User createUserWithToken(String firstName, String lastName, String login, String password) {
         User user = new User();
         user.setFirstName(firstName);
@@ -96,14 +106,14 @@ public class UserService {
 
     public User getUserByToken(String token) {
         for (User user : db.getUserList()) {
-            if (user.getToken().equals(token)) {
+            if (user.getToken() != null && user.getToken().equals(token)) {
                 return user;
             }
         }
         return null;
     }
 
-    private User getUserByLogin(String login) {
+    public User getUserByLogin(String login) {
         for (User user : db.getUserList()) {
             if (user.getLogin().equals(login)) {
                 return user;

@@ -16,10 +16,10 @@ import java.io.IOException;
  */
 public class Server {
 
-    private static UserService userService = new UserService();
-    private static DataBase db = DataBase.getInstance();
+    private UserService userService = new UserService();
+    private DataBase db = DataBase.getInstance();
     private ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
-    private static boolean isStarted;
+    private boolean isStarted;
     private boolean isLogined;
 
     /**
@@ -56,22 +56,18 @@ public class Server {
         return mapper.writeValueAsString(errorDtoResponse);
     }
 
-    public boolean logIn(String requestJsonString) throws IOException {
-        isLogined = userService.logIn(requestJsonString);
-        return isLogined;
+    public String logIn(String requestJsonString) throws IOException {
+        return userService.logIn(requestJsonString);
     }
 
-    public void logOut(String requestJsonString) throws IOException {
+    public String logOut(String requestJsonString) throws IOException {
         isLogined = false;
-        userService.logOut(requestJsonString);
+        return  userService.logOut(requestJsonString);
     }
 
     public String addSong(String requestJsonString) throws Exception {
-        if (isLogined) {
-            SongService songService = new SongService();
-            return songService.addSong(requestJsonString);
-        }
-        return "{\"errror\" : \"login not found\"}";
+        SongService songService = new SongService();
+        return songService.addSong(requestJsonString);
     }
 
     public static void main(String[] args) throws Exception {

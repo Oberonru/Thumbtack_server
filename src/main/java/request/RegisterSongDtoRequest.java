@@ -1,7 +1,5 @@
 package request;
 
-import model.Song;
-
 public class RegisterSongDtoRequest {
     private String songName;
     private String[] composer;
@@ -20,6 +18,9 @@ public class RegisterSongDtoRequest {
         this.token = token;
     }
 
+    public RegisterSongDtoRequest() {
+    }
+
     public boolean validateSong(String songName, String[] composer, String[] author, String musician,
                                 int songDuration) {
         return validateSongName(songName);
@@ -28,8 +29,6 @@ public class RegisterSongDtoRequest {
     private boolean validateSongName(String songName) {
         return true;
     }
-
-    public RegisterSongDtoRequest() {}
 
     public String getSongName() {
         return songName;

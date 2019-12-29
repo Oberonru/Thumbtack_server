@@ -29,4 +29,16 @@ public class TestSongService {
         String response = songService.addSong(requestJsonString);
         Assert.assertEquals(response, "{\"error\":\"Token in invalid\"}");
     }
+
+    @Test
+    public void test_addRaiting() throws Exception {
+        Server server = new Server();
+        server.startServer("saveData.json");
+        //todo: нужно зарегистрировать пользователя, добавить песню, а затем ей рейтинг
+        SongService songService = new SongService();
+        String requestJsonString = "{\"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\", \"songId\" : \"2\", \"songRaiting\" : \"3\"}";
+        songService.addRaiting(requestJsonString);
+        server.stopServer("saveData.json");
+
+    }
 }

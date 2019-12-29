@@ -1,21 +1,22 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.RaitingDaoImpl;
 import dao.SongDaoImpl;
+import database.DataBase;
 import model.Song;
+import request.RatingDtoRequest;
 import request.RegisterSongDtoRequest;
-import response.ErrorDtoResponse;
 
 public class SongService {
 
     private SongDaoImpl songData = new SongDaoImpl();
     private ObjectMapper mapper = new ObjectMapper();
     private UserService userService = new UserService();
-    private SongDaoImpl songDao = new SongDaoImpl();
 
     public SongService() {
     }
 
     public Song createSong(String songName, String[] composer, String[] author, String musician, double songDuration,
-                           String token) {
+                           String token, int songId, int rate) {
         Song song = new Song();
         song.setSongName(songName);
         song.setComposer(composer);
@@ -23,11 +24,9 @@ public class SongService {
         song.setMusician(musician);
         song.setSongDuration(songDuration);
         song.setToken(token);
+        song.setSongId(1);
+        song.setSongRaiting(5);
         return song;
-    }
-
-    public void addSongToDataBase(Song song, String saveDataFileName) {
-        songData.insert(song);
     }
 
     /**
@@ -39,20 +38,21 @@ public class SongService {
      * @return
      */
     public String addSong(String requestJsonString) throws Exception {
+        //проверка на залогиненность,далее уже можно в запросе добавить данные песни, добавим токен, идПесни, рейтинг)
         RegisterSongDtoRequest request = mapper.readValue(requestJsonString, RegisterSongDtoRequest.class);
-        if (userService.getUserByToken(request.getToken()) == null) {
-            ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
-            errorDtoResponse.error = "Token in invalid";
-            return mapper.writeValueAsString(errorDtoResponse);
-        }
-        Song newSong = createSong(request.getSongName(), request.getComposer(), request.getAuthor(),
-                request.getMusician(), request.getSongDuration(), request.getToken());
-
-        songData.insert(newSong);
-        return "{}";
+        //todo: в request токен должен быть как logIn, как он будет суюда передаваться?
+        if (userService.getUserByToken(request.getToken()) != null) {
+            Song newSong = createSong(request.getSongName(), request.getComposer(), request.getAuthor(),
+                    request.getMusician(), request.getSongDuration(), request.getToken(), 1, 5);
+            //изменяем id песни на новый
+            generateSongId(newSong);
+            songData.insert(newSong);
+            return "{}";
+        } else return "{\"error\" : \"User not found\"}";
     }
 
     //TODO:чтобы добавить рейтинг песне нужно, проверить на валидность токен, затем найти песню и добавить рейтинг...
+
     /**
      * Радиослушатель, предложивший песню в состав концерта, считается автором этого предложения.
      * Радиослушатели могут ставить свои оценки предлагаемым в программу песням по шкале 1..5. Радиослушатели вправе
@@ -62,11 +62,57 @@ public class SongService {
      * никаких оценок от других радиослушателей, оно удаляется.
      */
 
-    public void addRate(String requestJsonString)throws Exception {
-        //по идее в запросе мне нужн токен, зачем создавать какой то другой однотипный DTO объек, когда есть LogOutRequest?
-        //LogOutDtoRequest request = mapper.readValue(requestJsonString, LogOutDtoRequest.class);
-        //token -> userId,                      songId, rate
+    public String addRaiting(String requestJsonString) throws Exception {
+        RaitingDaoImpl raitingDao = new RaitingDaoImpl();
+        RatingDtoRequest ratingRequest = mapper.readValue(requestJsonString, RatingDtoRequest.class);
+        //проверка на границы рейтинга , от 1 до 5
+        if (!verifyRating(ratingRequest.getSongRaiting())) {
+            return "{\"error\" : \"raiting is not valid\"}";
+        }
+        if (userService.getUserByToken(ratingRequest.getToken()) == null) {
+            return "{\"error\" : \"User not found\"}";
+        }
+        //todo: должен быть по идее userSongList список песен пользователя, хотя в задании это не просится...
+        //todo: а в этом списке уже искать песни
 
+        Song song = findSongById(ratingRequest.getSongId());
+        if (song != null) {
+            song.setSongRaiting(ratingRequest.getSongRaiting());
+            return "{}";
+        }
+        return "{\"error\" : \"the operation cannot be performed\"}";
+    }
+
+    private boolean verifyRating(int raiting) {
+        return raiting > 0 && raiting < 6;
+    }
+
+    private Song findSongById(int songId) {
+        DataBase db = DataBase.getInstance();
+        for (Song song : db.getSongList()) {
+            if (song.getSongId() == songId) {
+                return song;
+            }
+        }
+        return null;
+    }
+
+    //прежде чем добавить оценку песне, нужно её сначала найти
+    public Song findSongByAuthor(String author) {
+        DataBase db = DataBase.getInstance();
+        for (Song song : db.getSongList()) {
+            if (song.getAuthor().equals(author)) {
+                return song;
+            }
+        }
+        return null;
+    }
+
+    private void generateSongId(Song song) {
+        DataBase db = DataBase.getInstance();
+        //берется последняя песня и к её songId добавляется единица
+        int newId = db.getSongList().get(db.getSongList().size() - 1).getSongId() + 1;
+        song.setSongId(newId);
     }
 
 }

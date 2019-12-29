@@ -8,6 +8,9 @@ public class Song {
     private double songDuration;
     private String token;
 
+    private int songId;
+    private int songRaiting;
+
     public Song() {
     }
 
@@ -57,5 +60,21 @@ public class Song {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public void setSongId(int songId) {
+        this.songId = songId;
+    }
+
+    public int getSongId() {
+        return songId;
+    }
+
+    public int getSongRaiting() {
+        return songRaiting;
+    }
+
+    public void setSongRaiting(int songRaiting) {
+        this.songRaiting = songRaiting;
     }
 }
