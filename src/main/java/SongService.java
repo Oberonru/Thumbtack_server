@@ -2,7 +2,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.RaitingDaoImpl;
 import dao.SongDaoImpl;
 import database.DataBase;
+import model.Raiting;
 import model.Song;
+import model.User;
+import request.DeleteSongRaitingRequest;
 import request.RatingDtoRequest;
 import request.RegisterSongDtoRequest;
 
@@ -11,12 +14,14 @@ public class SongService {
     private SongDaoImpl songData = new SongDaoImpl();
     private ObjectMapper mapper = new ObjectMapper();
     private UserService userService = new UserService();
+    private DataBase db = DataBase.getInstance();
+
 
     public SongService() {
     }
 
     public Song createSong(String songName, String[] composer, String[] author, String musician, double songDuration,
-                           String token, int songId, int rate) {
+                           String token) {
         Song song = new Song();
         song.setSongName(songName);
         song.setComposer(composer);
@@ -25,7 +30,6 @@ public class SongService {
         song.setSongDuration(songDuration);
         song.setToken(token);
         song.setSongId(1);
-        song.setSongRaiting(5);
         return song;
     }
 
@@ -38,20 +42,17 @@ public class SongService {
      * @return
      */
     public String addSong(String requestJsonString) throws Exception {
-        //проверка на залогиненность,далее уже можно в запросе добавить данные песни, добавим токен, идПесни, рейтинг)
         RegisterSongDtoRequest request = mapper.readValue(requestJsonString, RegisterSongDtoRequest.class);
-        //todo: в request токен должен быть как logIn, как он будет суюда передаваться?
-        if (userService.getUserByToken(request.getToken()) != null) {
+        User user = userService.getUserByToken(request.getToken());
+        if (user != null) {
             Song newSong = createSong(request.getSongName(), request.getComposer(), request.getAuthor(),
-                    request.getMusician(), request.getSongDuration(), request.getToken(), 1, 5);
-            //изменяем id песни на новый
+                    request.getMusician(), request.getSongDuration(), request.getToken());
             generateSongId(newSong);
             songData.insert(newSong);
+            db.updateRaiting(new Raiting(user.getLogin(), newSong.getSongId(), 5));
             return "{}";
         } else return "{\"error\" : \"User not found\"}";
     }
-
-    //TODO:чтобы добавить рейтинг песне нужно, проверить на валидность токен, затем найти песню и добавить рейтинг...
 
     /**
      * Радиослушатель, предложивший песню в состав концерта, считается автором этого предложения.
@@ -63,31 +64,38 @@ public class SongService {
      */
 
     public String addRaiting(String requestJsonString) throws Exception {
-        RaitingDaoImpl raitingDao = new RaitingDaoImpl();
         RatingDtoRequest ratingRequest = mapper.readValue(requestJsonString, RatingDtoRequest.class);
-        //проверка на границы рейтинга , от 1 до 5
         if (!verifyRating(ratingRequest.getSongRaiting())) {
             return "{\"error\" : \"raiting is not valid\"}";
         }
-        if (userService.getUserByToken(ratingRequest.getToken()) == null) {
+        User user = userService.getUserByLogin(ratingRequest.getLogin());
+        if (user == null) {
             return "{\"error\" : \"User not found\"}";
         }
-        //todo: должен быть по идее userSongList список песен пользователя, хотя в задании это не просится...
-        //todo: а в этом списке уже искать песни
-
         Song song = findSongById(ratingRequest.getSongId());
         if (song != null) {
-            song.setSongRaiting(ratingRequest.getSongRaiting());
+            db.updateRaiting(new Raiting(user.getLogin(), song.getSongId(), ratingRequest.getSongRaiting()));
             return "{}";
         }
         return "{\"error\" : \"the operation cannot be performed\"}";
     }
 
-    private boolean verifyRating(int raiting) {
+    /**
+     * Радиослушатели, сделавшие свое предложение, могут отменить его. Если на момент отмены предложение не получило
+     * * никаких оценок от других радиослушателей, оно удаляется.
+     *
+     * @return
+     */
+    public String deleteSong() {
+        return "";
+    }
+
+
+    public boolean verifyRating(int raiting) {
         return raiting > 0 && raiting < 6;
     }
 
-    private Song findSongById(int songId) {
+    public Song findSongById(int songId) {
         DataBase db = DataBase.getInstance();
         for (Song song : db.getSongList()) {
             if (song.getSongId() == songId) {
@@ -109,10 +117,11 @@ public class SongService {
     }
 
     private void generateSongId(Song song) {
-        DataBase db = DataBase.getInstance();
         //берется последняя песня и к её songId добавляется единица
-        int newId = db.getSongList().get(db.getSongList().size() - 1).getSongId() + 1;
-        song.setSongId(newId);
+        if (db.getSongList().size() != 0) {
+            int newId = db.getSongList().get(db.getSongList().size() - 1).getSongId() + 1;
+            song.setSongId(newId);
+        }
+        else return;
     }
-
 }
