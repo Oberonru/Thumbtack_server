@@ -13,5 +13,9 @@ public class DataBaseModel {
     public List<Song> songs = new ArrayList<Song>();
 
     @JsonDeserialize(as = ArrayList.class, contentAs = Raiting.class)
-    public List<Raiting> raitings = new ArrayList<Raiting>();
+    public List<Raiting> ratings = new ArrayList<Raiting>();
+
+    @JsonDeserialize(as = ArrayList.class, contentAs = Comment.class)
+    public List<Comment> comments = new ArrayList<Comment>();
+
 }

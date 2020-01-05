@@ -1,6 +1,6 @@
 package request;
 
-public class LogInDtoRwquest {
+public class LogInDtoRequest {
     private String login;
     private String password;
 

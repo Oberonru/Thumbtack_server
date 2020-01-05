@@ -1,6 +1,6 @@
 package response;
 
-public class LogInDtoReswponse {
+public class LogInDtoResponse {
     private String token;
 
     public String getToken() {

@@ -1,16 +1,24 @@
 package model;
 
 public class Raiting {
-    private String token;
+    private String login;
     private int songId;
-    private int songRaiting;
+    private int songRating;
 
-    public String getToken() {
-        return token;
+    public Raiting() {}
+
+    public Raiting(String login, int songId, int songRating) {
+        this.login = login;
+        this.songId = songId;
+        this.songRating = songRating;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public Raiting(String login, int songId) {
+        this(login, songId, 0);
+    }
+
+    public String getLogin() {
+        return login;
     }
 
     public int getSongId() {
@@ -21,12 +29,12 @@ public class Raiting {
         this.songId = songId;
     }
 
-    public int getSongRaiting() {
-        return songRaiting;
+    public int getSongRating() {
+        return songRating;
     }
 
-    public void setSongRaiting(int songRaiting) {
-        this.songRaiting = songRaiting;
+    public void setSongRating(int songRating) {
+        this.songRating = songRating;
     }
 
 

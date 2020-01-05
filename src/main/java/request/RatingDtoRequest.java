@@ -1,16 +1,16 @@
 package request;
 
 public class RatingDtoRequest {
-    private String token;
+    private String login;
     private int songId;
-    private int songRaiting;
+    private int songRating;
 
-    public String getToken() {
-        return token;
+    public String getLogin() {
+        return login;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setLogin(String token) {
+        this.login = token;
     }
 
     public int getSongId() {
@@ -21,11 +21,11 @@ public class RatingDtoRequest {
         this.songId = songId;
     }
 
-    public int getSongRaiting() {
-        return songRaiting;
+    public int getSongRating() {
+        return songRating;
     }
 
-    public void setSongRaiting(int songRaiting) {
-        this.songRaiting = songRaiting;
+    public void setSongRating(int songRating) {
+        this.songRating = songRating;
     }
 }

@@ -21,9 +21,8 @@
       ],
       "musician": "Capel'",
       "songDuration": 5.0,
-      "token": "09b7c049-fbc8-4d6b-8b52-8ca2fd5f6714",
-      "songId": 1,
-      "songRaiting": 5
+      "login" : "uaSek",
+      "songId": 1
     },
     {
       "songName": "second",
@@ -37,16 +36,15 @@
       ],
       "musician": "Songer",
       "songDuration": 1.0,
-      "token": "61b51fca-6100-421e-b829-1a9da83faae3",
-      "songId": 2,
-      "songRaiting": 5
+      "login": "pedro",
+      "songId": 2
     }
   ],
-  "raitings": [
+  "ratings": [
     {
-      "token": "61b51fca-6100-421e-b829-1a9da83faae3",
+      "login": "uaSek",
       "songId": "2",
-      "songRaiting": 1
+      "songRating": 1
     }
   ]
 }

@@ -1,6 +1,6 @@
 package request;
 
-public class DeleteSongRaitingRequest {
+public class DeleteSongDtoRatingRequest {
     private String token;
     private int songId;
 

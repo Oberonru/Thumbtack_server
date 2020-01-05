@@ -1,7 +1,7 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.DataBase;
 import model.User;
-import request.LogInDtoRwquest;
+import request.LogInDtoRequest;
 import request.LogOutDtoRequest;
 import request.RegisterUserDtoRequest;
 import response.ErrorDtoResponse;
@@ -47,7 +47,7 @@ public class UserService {
         db.addUser(newUser);
         RegisterUserDtoResponse response = new RegisterUserDtoResponse();
         response.setToken(newUser.getToken());
-        return  mapper.writeValueAsString(response);
+        return mapper.writeValueAsString(response);
     }
 
     /**
@@ -55,14 +55,16 @@ public class UserService {
      * использовать во всех операциях вплоть до нового выхода.
      */
     public String logIn(String requestJsonString) throws IOException {
-        LogInDtoRwquest logInRequest = mapper.readValue(requestJsonString, LogInDtoRwquest.class);
+        LogInDtoRequest logInRequest = mapper.readValue(requestJsonString, LogInDtoRequest.class);
         User user = getUserByLogin(logInRequest.getLogin());
         if (user != null) {
             if (user.getToken() == null) {
                 user.setToken(generateToken());
+                //todo: сразу нужно перезаписать в базу новый токен
+                db.updateUser(user);
             }
             return mapper.writeValueAsString(user.getToken());
-        } else  return "{\"error\" : \"login not found\"}";
+        } else return "{\"error\" : \"login not found\"}";
     }
 
     /**
@@ -76,17 +78,19 @@ public class UserService {
 
     public String logOut(String requestJsonString) throws IOException {
         LogOutDtoRequest logOutRequest = mapper.readValue(requestJsonString, LogOutDtoRequest.class);
-        User user = getUserByLogin(logOutRequest.getLogin());
+        User user = db.getUserByToken(logOutRequest.getToken());
         if (user != null) {
             user.setToken(null);
+            db.updateUser(user);
             return "{}";
         }
         return "{\"error\" : \"user not found\"}";
     }
 
     /**
-     * 	Зарегистрированный на сервере радиослушатель может покинуть сервер, в этом случае вся информация о нем
-     * 	удаляется, а список сделанных им предложений обрабатывается как указано ниже.
+     * Зарегистрированный на сервере радиослушатель может покинуть сервер, в этом случае вся информация о нем
+     * удаляется, а список сделанных им предложений обрабатывается как указано ниже.
+     *
      * @param requestJsonString
      * @return
      */
@@ -102,15 +106,6 @@ public class UserService {
         user.setPassword(password);
         user.setToken(generateToken());
         return user;
-    }
-
-    public User getUserByToken(String token) {
-        for (User user : db.getUserList()) {
-            if (user.getToken() != null && user.getToken().equals(token)) {
-                return user;
-            }
-        }
-        return null;
     }
 
     public User getUserByLogin(String login) {

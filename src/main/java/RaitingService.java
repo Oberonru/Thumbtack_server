@@ -3,33 +3,15 @@ import database.DataBase;
 import model.Raiting;
 import model.Song;
 import model.User;
-import request.DeleteSongRaitingRequest;
+import request.DeleteSongDtoRatingRequest;
 import request.RatingDtoRequest;
 
-public class ReitingService {
+public class RaitingService {
     private UserService userService = new UserService();
     private ObjectMapper mapper = new ObjectMapper();
     private DataBase db = DataBase.getInstance();
     private SongService songService = new SongService();
 
-    public String deleteRaiting(String requestJsonString) throws Exception {
-
-        DeleteSongRaitingRequest deleteRequest = mapper.readValue(requestJsonString, DeleteSongRaitingRequest.class);
-        User user = userService.getUserByToken(deleteRequest.getToken());
-
-        if (user != null) {
-            int rate = 0;
-            for (Raiting r : db.getRaitingList()) {
-                if (user.getLogin().equals(r.getLogin()) && deleteRequest.getSongId() == r.getSongId()) {
-                    rate = r.getSongRaiting();
-                    break;
-                }
-            }
-            db.deleteRaiting(new Raiting(user.getLogin(), deleteRequest.getSongId(), rate));
-            return "{}";
-        }
-        return "\"error\" : \"the operato\"";
-    }
     /**
      * Радиослушатель, предложивший песню в состав концерта, считается автором этого предложения.
      * Радиослушатели могут ставить свои оценки предлагаемым в программу песням по шкале 1..5. Радиослушатели вправе
@@ -41,28 +23,38 @@ public class ReitingService {
 
     public String addRaiting(String requestJsonString) throws Exception {
         RatingDtoRequest ratingRequest = mapper.readValue(requestJsonString, RatingDtoRequest.class);
-        if (!verifyRating(ratingRequest.getSongRaiting())) {
+        if (!verifyRating(ratingRequest.getSongRating())) {
             return "{\"error\" : \"raiting is not valid\"}";
         }
         User user = userService.getUserByLogin(ratingRequest.getLogin());
         if (user == null) {
             return "{\"error\" : \"User not found\"}";
         }
-        Song song = songService.findSongById(ratingRequest.getSongId());
-        if (song != null) {
-            db.updateRaiting(new Raiting(user.getLogin(), song.getSongId(), ratingRequest.getSongRaiting()));
-            return "{}";
+        Song song = db.findSongById(ratingRequest.getSongId());
+        if (song == null) {
+           return "\"error\" : \"Song not found\"";
         }
-        return "{\"error\" : \"the operation cannot be performed\"}";
+        db.updateRaiting(new Raiting(user.getLogin(), song.getSongId(), ratingRequest.getSongRating()));
+        return "{}";
     }
 
     public boolean verifyRating(int raiting) {
         return raiting > 0 && raiting < 6;
     }
 
+    public String deleteRating(String requestJsonString) throws Exception {
+        DeleteSongDtoRatingRequest deleteRequest = mapper.readValue(requestJsonString, DeleteSongDtoRatingRequest.class);
 
-
-
-
-
+        User user = db.getUserByToken(deleteRequest.getToken());
+        Song song = db.findSongById(deleteRequest.getSongId());
+        if (song == null) {
+            return "\"error\" : \"Song not found\"";
+        }
+        //todo: найти по songId песню
+        if (user != null) {
+            db.deleteRaiting(new Raiting(user.getLogin(), deleteRequest.getSongId()));
+            return "{}";
+        }
+        return "\"error\" : \"user not found\"";
+    }
 }

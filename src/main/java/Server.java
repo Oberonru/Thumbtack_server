@@ -17,10 +17,12 @@ import java.io.IOException;
 public class Server {
 
     private UserService userService = new UserService();
+    private SongService songService = new SongService();
+    private RaitingService raitingService = new RaitingService();
+    private CommentService commentService = new CommentService();
     private DataBase db = DataBase.getInstance();
     private ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
     private boolean isStarted;
-    private boolean isLogined;
 
     /**
      * Производит всю необходимую инициализацию и запускает сервер.
@@ -43,7 +45,7 @@ public class Server {
      */
     public void stopServer(String savedDataFileName) throws Exception {
         isStarted = false;
-        db.saveData();
+        db.saveData(savedDataFileName);
     }
 
     public String registerUser(String registerUserJson) throws Exception {
@@ -61,15 +63,26 @@ public class Server {
     }
 
     public String logOut(String requestJsonString) throws IOException {
-        isLogined = false;
-        return  userService.logOut(requestJsonString);
+        return userService.logOut(requestJsonString);
     }
 
     public String addSong(String requestJsonString) throws Exception {
-        SongService songService = new SongService();
         return songService.addSong(requestJsonString);
     }
 
-    public static void main(String[] args) throws Exception {
+    public String deleteSong(String requestJsonString) throws  Exception {
+        return songService.deleteSong(requestJsonString);
+    }
+
+    public String addRaiting(String requestJsonString) throws Exception {
+        return raitingService.addRaiting(requestJsonString);
+    }
+
+    public String deleteRaiting(String requestJsonString) throws Exception {
+        return raitingService.deleteRating(requestJsonString);
+    }
+
+    public String addComment(String requestJsonString) throws Exception {
+        return commentService.addComment(requestJsonString);
     }
 }

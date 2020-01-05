@@ -6,10 +6,10 @@ public class Song {
     private String[] author;
     private String musician;
     private double songDuration;
-    private String token;
+    private String login;
 
     private int songId;
-    private int songRaiting;
+    //private int songRaiting;
 
     public Song() {
     }
@@ -54,12 +54,12 @@ public class Song {
         this.songDuration = songDuration;
     }
 
-    public String getToken() {
-        return token;
+    public String getLogin() {
+        return login;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public void setSongId(int songId) {
@@ -70,11 +70,11 @@ public class Song {
         return songId;
     }
 
-    public int getSongRaiting() {
-        return songRaiting;
-    }
-
-    public void setSongRaiting(int songRaiting) {
-        this.songRaiting = songRaiting;
-    }
+//    public int getSongRating() {
+//        return songRaiting;
+//    }
+//
+//    public void setSongRating(int songRaiting) {
+//        this.songRaiting = songRaiting;
+//    }
 }

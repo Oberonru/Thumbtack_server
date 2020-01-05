@@ -12,12 +12,10 @@ public class TestSongService {
     @Test
     public void test_addSong() throws Exception {
         server.startServer("testServerData.json");
-
         String requestJsonString = "{\"songName\" : \"second\", \"composer\" : [\"BBBB\", \"AAAA\"]," +
                 " \"author\" : [\"CCC\", \"DDD\"], \"musician\" : \"Songer\",  \"songDuration\" : 1," +
-                " \"token\" : \"61b51fca-6100-421e-b829-1a9da83faae3\"}";
-        String response = songService.addSong(requestJsonString);
-        Assert.assertEquals(response, "{}");
+                " \"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
+        Assert.assertEquals(songService.addSong(requestJsonString), "{}");
     }
 
     @Test
@@ -26,19 +24,40 @@ public class TestSongService {
         String requestJsonString = "{\"songName\" : \"Elochka\", \"composer\" : [\"Zayac\", \"Volk\"]," +
                 " \"author\" : [\"Volk\", \"Zayac\"], \"musician\" : \"Capel'\",  \"songDuration\" : 5," +
                 " \"token\" : \"09b7c049-fbc8-4d6b-8b52-8ca2fd5f6734\"}";
-        String response = songService.addSong(requestJsonString);
-        Assert.assertEquals(response, "{\"error\":\"Token in invalid\"}");
+
+        Assert.assertEquals(songService.addSong(requestJsonString), "{\"error\" : \"User not found\"}");
     }
 
     @Test
-    public void test_addRaiting() throws Exception {
+    public void test_deleteSong_someoneElseseSong() throws Exception {
         Server server = new Server();
-        server.startServer("saveData.json");
-        //todo: нужно зарегистрировать пользователя, добавить песню, а затем ей рейтинг
-        SongService songService = new SongService();
-        String requestJsonString = "{\"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\", \"songId\" : \"2\", \"songRaiting\" : \"3\"}";
-        songService.addRaiting(requestJsonString);
-        server.stopServer("saveData.json");
-
+        server.startServer("songTest.json");
+        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"songId\" : 2}";
+        Assert.assertEquals("{\"error\" : \"The user can't delete song\"}",server.deleteSong(requestJsonString));
     }
+    @Test
+    public void test_deleteSong_moreOneRate() throws Exception {
+        Server server = new Server();
+        server.startServer("songTest.json");
+        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"songId\" : 1}";
+        Assert.assertEquals("{\"error\" : \"The user can't delete song\"}", server.deleteSong(requestJsonString));
+        server.stopServer("saveSongTest.json");
+    }
+    @Test
+    public void test_deleteSong() throws Exception {
+        Server server = new Server();
+        server.startServer("songTest.json");
+        String requestJsonString = "{\"token\" : \"9f0e256-e429-4eec-a24a-4b2901eb00000\", \"songId\" : 3}";
+        Assert.assertEquals("{}", server.deleteSong(requestJsonString));
+        server.stopServer("saveSongTest.json");
+    }
+
+
+//    @Test
+//    public void test_frequencyRaitings() {
+//        Server server = new Server();
+//        server.startServer("songTest.json");
+//        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"songId\" : 1}";
+//    }
+
 }

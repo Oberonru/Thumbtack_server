@@ -6,6 +6,6 @@ import model.Raiting;
 public class RaitingDaoImpl implements RaitingDao {
     private DataBase db = DataBase.getInstance();
     public void insert(Raiting raiting) {
-        db.addRaiting(raiting);
+        db.updateRaiting(raiting);
     }
 }
