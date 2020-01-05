@@ -3,6 +3,8 @@ package dao;
 import database.DataBase;
 import model.Rating;
 
+import java.util.List;
+
 public class RatingDaoImpl implements RatingDao {
     private DataBase db = DataBase.getInstance();
 
@@ -12,5 +14,9 @@ public class RatingDaoImpl implements RatingDao {
 
     public void updateRating(Rating rating) {
         db.updateRaiting(rating);
+    }
+
+    public List<Rating> getRatingList() {
+        return db.getRatingList();
     }
 }

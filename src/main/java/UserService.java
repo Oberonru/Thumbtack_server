@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.UserDaoImpl;
 import database.DataBase;
 import model.User;
 import request.LogInDtoRequest;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class UserService {
 
     private DataBase db = DataBase.getInstance();
+    private UserDaoImpl userDao = new UserDaoImpl();
     private ObjectMapper mapper = new ObjectMapper();
     ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
 
@@ -44,7 +46,7 @@ public class UserService {
         User newUser = createUserWithToken(request.getFirstName(), request.getLastName(), request.getLogin(),
                 request.getPassword());
 
-        db.addUser(newUser);
+        userDao.insert(newUser);
         RegisterUserDtoResponse response = new RegisterUserDtoResponse();
         response.setToken(newUser.getToken());
         return mapper.writeValueAsString(response);
@@ -60,8 +62,7 @@ public class UserService {
         if (user != null) {
             if (user.getToken() == null) {
                 user.setToken(generateToken());
-                //todo: сразу нужно перезаписать в базу новый токен
-                db.updateUser(user);
+                userDao.updateUser(user);
             }
             return mapper.writeValueAsString(user.getToken());
         } else return "{\"error\" : \"login not found\"}";
@@ -72,16 +73,14 @@ public class UserService {
      * войти на сервер снова. При этом ему достаточно ввести свои логин и пароль.
      * Зарегистрированный на сервере радиослушатель может покинуть сервер, в этом случае вся информация о нем удаляется
      * <p>
-     * ////////////////////////////////
-     * для выполнения опеарции нужно предъявить  джейсон с токеном? найти в бд и присвоить null?
      */
 
     public String logOut(String requestJsonString) throws IOException {
         LogOutDtoRequest logOutRequest = mapper.readValue(requestJsonString, LogOutDtoRequest.class);
-        User user = db.getUserByToken(logOutRequest.getToken());
+        User user = userDao.getUserByToken(logOutRequest.getToken());
         if (user != null) {
             user.setToken(null);
-            db.updateUser(user);
+            userDao.updateUser(user);
             return "{}";
         }
         return "{\"error\" : \"user not found\"}";
@@ -92,7 +91,7 @@ public class UserService {
      * удаляется, а список сделанных им предложений обрабатывается как указано ниже.
      *
      * @param requestJsonString
-     * @return
+     * @return user
      */
     public String exitToServer(String requestJsonString) {
         return "fig";
