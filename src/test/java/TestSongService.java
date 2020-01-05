@@ -11,20 +11,20 @@ public class TestSongService {
 
     @Test
     public void test_addSong() throws Exception {
-        server.startServer("testServerData.json");
-        String requestJsonString = "{\"songName\" : \"second\", \"composer\" : [\"BBBB\", \"AAAA\"]," +
-                " \"author\" : [\"CCC\", \"DDD\"], \"musician\" : \"Songer\",  \"songDuration\" : 1," +
-                " \"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
+        server.startServer("songTest.json");
+        String requestJsonString = "{\"songName\" : \"Murka\", \"composer\" : [\"Mur\", \"Mureh\"]," +
+                " \"author\" : [\"None\", \"None\"], \"musician\" : \"Ruhum\",  \"songDuration\" : 1," +
+                " \"token\" : \"1f07e256-e429-4eec-a24a-4b2901eb7cf6\"}";
         Assert.assertEquals(songService.addSong(requestJsonString), "{}");
+        server.stopServer("saveSongTest.json");
     }
 
     @Test
     public void test_addSong_invalidToken() throws Exception {
-        server.startServer("testServerData.json");
+        server.startServer("songTest.json");
         String requestJsonString = "{\"songName\" : \"Elochka\", \"composer\" : [\"Zayac\", \"Volk\"]," +
                 " \"author\" : [\"Volk\", \"Zayac\"], \"musician\" : \"Capel'\",  \"songDuration\" : 5," +
                 " \"token\" : \"09b7c049-fbc8-4d6b-8b52-8ca2fd5f6734\"}";
-
         Assert.assertEquals(songService.addSong(requestJsonString), "{\"error\" : \"User not found\"}");
     }
 

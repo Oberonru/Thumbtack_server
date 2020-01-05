@@ -1,6 +1,6 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.DataBase;
-import model.Raiting;
+import model.Rating;
 import model.Song;
 import model.User;
 import request.DeleteSongDtoRatingRequest;
@@ -34,7 +34,7 @@ public class RaitingService {
         if (song == null) {
            return "\"error\" : \"Song not found\"";
         }
-        db.updateRaiting(new Raiting(user.getLogin(), song.getSongId(), ratingRequest.getSongRating()));
+        db.updateRaiting(new Rating(user.getLogin(), song.getSongId(), ratingRequest.getSongRating()));
         return "{}";
     }
 
@@ -52,7 +52,7 @@ public class RaitingService {
         }
         //todo: найти по songId песню
         if (user != null) {
-            db.deleteRaiting(new Raiting(user.getLogin(), deleteRequest.getSongId()));
+            db.deleteRaiting(new Rating(user.getLogin(), deleteRequest.getSongId()));
             return "{}";
         }
         return "\"error\" : \"user not found\"";

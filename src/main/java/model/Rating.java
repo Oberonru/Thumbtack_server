@@ -1,19 +1,19 @@
 package model;
 
-public class Raiting {
+public class Rating {
     private String login;
     private int songId;
     private int songRating;
 
-    public Raiting() {}
+    public Rating() {}
 
-    public Raiting(String login, int songId, int songRating) {
+    public Rating(String login, int songId, int songRating) {
         this.login = login;
         this.songId = songId;
         this.songRating = songRating;
     }
 
-    public Raiting(String login, int songId) {
+    public Rating(String login, int songId) {
         this(login, songId, 0);
     }
 

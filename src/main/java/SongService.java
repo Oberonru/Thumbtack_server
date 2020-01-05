@@ -1,7 +1,8 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.RatingDaoImpl;
 import dao.SongDaoImpl;
 import database.DataBase;
-import model.Raiting;
+import model.Rating;
 import model.Song;
 import model.User;
 import request.DeleteSongDtoRequest;
@@ -10,6 +11,7 @@ import request.RegisterSongDtoRequest;
 public class SongService {
 
     private SongDaoImpl songData = new SongDaoImpl();
+    private RatingDaoImpl ratingDao = new RatingDaoImpl();
     private ObjectMapper mapper = new ObjectMapper();
     private UserService userService = new UserService();
     private DataBase db = DataBase.getInstance();
@@ -47,7 +49,7 @@ public class SongService {
                     request.getMusician(), request.getSongDuration(), request.getToken());
             generateSongId(newSong);
             songData.insert(newSong);
-            db.updateRaiting(new Raiting(user.getLogin(), newSong.getSongId(), 5));
+            ratingDao.updateRating(new Rating(user.getLogin(), newSong.getSongId(), 5));
             return "{}";
         } else return "{\"error\" : \"User not found\"}";
     }

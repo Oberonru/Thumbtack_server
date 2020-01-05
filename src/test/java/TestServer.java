@@ -13,8 +13,8 @@ public class TestServer {
         Assert.assertEquals(db.getSongList().size(), 2);
         Assert.assertEquals(db.getUserList().get(0).getFirstName(), "Uasya");
         Assert.assertEquals(db.getSongList().get(1).getSongName(), "second");
-        Assert.assertEquals(db.getRaitingList().get(0).getLogin(), "uaSek");
-        Assert.assertEquals(db.getRaitingList().get(0).getSongId(), 2);
+        Assert.assertEquals(db.getRatingList().get(0).getLogin(), "uaSek");
+        Assert.assertEquals(db.getRatingList().get(0).getSongId(), 2);
     }
 
     @Test

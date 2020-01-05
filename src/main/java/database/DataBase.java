@@ -15,7 +15,7 @@ public class DataBase {
     @JsonDeserialize(as = ArrayList.class, contentAs = User.class)
     private List<User> userList = new ArrayList<User>();
     private List<Song> songList = new ArrayList<Song>();
-    private List<Raiting> raitingList = new ArrayList<Raiting>();
+    private List<Rating> ratingList = new ArrayList<Rating>();
     private List<Comment> commentList = new ArrayList<Comment>();
     private ObjectMapper mapper = new ObjectMapper();
     private static DataBase instance;
@@ -63,21 +63,21 @@ public class DataBase {
         return "{\"error\" : \"The user can't delete song\"}";
     }
 
-    public void updateRaiting(Raiting raiting) {
+    public void updateRaiting(Rating rating) {
         boolean isExsist = false;
-        for (Raiting r : raitingList) {
-            if (r.getLogin().equals(raiting.getLogin()) && r.getSongId() == raiting.getSongId()) {
-                boolean isAutor = raiting.getLogin().equals(findSongById(raiting.getSongId()).getLogin());
+        for (Rating r : ratingList) {
+            if (r.getLogin().equals(rating.getLogin()) && r.getSongId() == rating.getSongId()) {
+                boolean isAutor = rating.getLogin().equals(findSongById(rating.getSongId()).getLogin());
                 if (isAutor) {
                     return;
                 }
-                r.setSongRating(raiting.getSongRating());
+                r.setSongRating(rating.getSongRating());
                 isExsist = true;
                 break;
             }
         }
         if (!isExsist) {
-            raitingList.add(raiting);
+            ratingList.add(rating);
         }
     }
 
@@ -125,8 +125,8 @@ public class DataBase {
 
     public int frequencyRaitings(int songId) {
         int count = 0;
-        for (Raiting raiting : raitingList) {
-            if (raiting.getSongId() == songId) {
+        for (Rating rating : ratingList) {
+            if (rating.getSongId() == songId) {
                 count++;
             }
         }
@@ -142,11 +142,11 @@ public class DataBase {
         return null;
     }
 
-    public void deleteRaiting(Raiting raiting) throws Exception {
-        for (int i = 0; i < raitingList.size(); i++) {
-            Raiting r = raitingList.get(i);
-            if (r.getLogin().equals(raiting.getLogin()) && r.getSongId() == raiting.getSongId()) {
-                raitingList.remove(r);
+    public void deleteRaiting(Rating rating) throws Exception {
+        for (int i = 0; i < ratingList.size(); i++) {
+            Rating r = ratingList.get(i);
+            if (r.getLogin().equals(rating.getLogin()) && r.getSongId() == rating.getSongId()) {
+                ratingList.remove(r);
                 break;
             }
         }
@@ -157,7 +157,7 @@ public class DataBase {
             DataBaseModel dbm = new DataBaseModel();
             dbm.users.addAll(userList);
             dbm.songs.addAll(songList);
-            dbm.ratings.addAll(raitingList);
+            dbm.ratings.addAll(ratingList);
             dbm.comments.addAll(commentList);
             FileWriter fileWriter = new FileWriter(new File(savedDataFileName), false);
             mapper.writerWithDefaultPrettyPrinter().writeValue(fileWriter, dbm);
@@ -178,11 +178,11 @@ public class DataBase {
             DataBaseModel dbm = mapper.readValue(new File(savedDataFileName), DataBaseModel.class);
             userList.clear();
             songList.clear();
-            raitingList.clear();
+            ratingList.clear();
             commentList.clear();
             userList.addAll(dbm.users);
             songList.addAll(dbm.songs);
-            raitingList.addAll(dbm.ratings);
+            ratingList.addAll(dbm.ratings);
             commentList.addAll(dbm.comments);
         } catch (Exception e) {
             e.printStackTrace();
@@ -204,8 +204,8 @@ public class DataBase {
         return songList;
     }
 
-    public List<Raiting> getRaitingList() {
-        return raitingList;
+    public List<Rating> getRatingList() {
+        return ratingList;
     }
 
     public List<Comment> getCommentList() {

@@ -12,8 +12,8 @@ public class DataBaseModel {
     @JsonDeserialize(as = ArrayList.class, contentAs = Song.class)
     public List<Song> songs = new ArrayList<Song>();
 
-    @JsonDeserialize(as = ArrayList.class, contentAs = Raiting.class)
-    public List<Raiting> ratings = new ArrayList<Raiting>();
+    @JsonDeserialize(as = ArrayList.class, contentAs = Rating.class)
+    public List<Rating> ratings = new ArrayList<Rating>();
 
     @JsonDeserialize(as = ArrayList.class, contentAs = Comment.class)
     public List<Comment> comments = new ArrayList<Comment>();
