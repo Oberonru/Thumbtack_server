@@ -42,14 +42,6 @@
     "songDuration" : 10.0,
     "login" : "burumbum",
     "songId" : 3
-  }, {
-    "songName" : "Murka",
-    "composer" : [ "Mur", "Mureh" ],
-    "author" : [ "None", "None" ],
-    "musician" : "Ruhum",
-    "songDuration" : 1.0,
-    "login" : "petrucsho",
-    "songId" : 4
   } ],
   "ratings" : [ {
     "login" : "petrucsho",
@@ -66,10 +58,6 @@
   }, {
     "login" : "burumbum",
     "songId" : 3,
-    "songRating" : 5
-  }, {
-    "login" : "petrucsho",
-    "songId" : 4,
     "songRating" : 5
   } ],
   "comments" : [ ]

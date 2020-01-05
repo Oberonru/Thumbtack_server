@@ -9,4 +9,8 @@ public class SongDaoImpl implements SongDao {
     public void insert(Song song) {
         db.addSong(song);
     }
+
+    public String deleteSong(Song song) {
+       return db.deleteSong(song);
+    }
 }

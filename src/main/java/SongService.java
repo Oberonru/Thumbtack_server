@@ -10,7 +10,7 @@ import request.RegisterSongDtoRequest;
 
 public class SongService {
 
-    private SongDaoImpl songData = new SongDaoImpl();
+    private SongDaoImpl songDao = new SongDaoImpl();
     private RatingDaoImpl ratingDao = new RatingDaoImpl();
     private ObjectMapper mapper = new ObjectMapper();
     private UserService userService = new UserService();
@@ -48,7 +48,7 @@ public class SongService {
             Song newSong = createSong(request.getSongName(), request.getComposer(), request.getAuthor(),
                     request.getMusician(), request.getSongDuration(), request.getToken());
             generateSongId(newSong);
-            songData.insert(newSong);
+            songDao.insert(newSong);
             ratingDao.updateRating(new Rating(user.getLogin(), newSong.getSongId(), 5));
             return "{}";
         } else return "{\"error\" : \"User not found\"}";
@@ -67,7 +67,7 @@ public class SongService {
         if (song == null) {
             return "{\"error\" : \"Song not found\"}";
         }
-        return db.deleteSong(song);
+        return songDao.deleteSong(song);
 
     }
 
