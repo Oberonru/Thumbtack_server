@@ -25,7 +25,7 @@
   "songs": [
     {
       "songName": "Elochka",
-      "composer": [
+      "composers": [
         "Zayac",
         "Volk"
       ],
@@ -40,7 +40,7 @@
     },
     {
       "songName": "second",
-      "composer": [
+      "composers": [
         "BBBB",
         "AAAA"
       ],
@@ -55,7 +55,7 @@
     },
     {
       "songName": "RamambaharaMamburum",
-      "composer": [
+      "composers": [
         "Murum",
         "Burum"
       ],
@@ -66,6 +66,19 @@
       "songDuration": 10.0,
       "login": "burumbum",
       "songId": 3
+    },
+    {
+      "songName": "Sonata",
+      "composers": [
+        "Bethoven"
+      ],
+      "author": [
+        "Bethoven"
+      ],
+      "musician": "Bethoven",
+      "songDuration": 4.3,
+      "login": "petrucsho",
+      "songId": 4
     }
   ],
   "ratings": [
@@ -88,7 +101,18 @@
       "login": "burumbum",
       "songId": 3,
       "songRating": 5
+    },
+    {
+      "login": "petrucsho",
+      "songId": 4,
+      "songRating": 5
     }
   ],
-  "comments": []
+  "comments": [
+    {
+      "login": "bivalii",
+      "content": "Вах...",
+      "songId": 4
+    }
+  ]
 }

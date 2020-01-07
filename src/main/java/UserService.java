@@ -18,11 +18,8 @@ import java.util.UUID;
  * соответствующему сервису
  */
 public class UserService {
-
-    private DataBase db = DataBase.getInstance();
     private UserDaoImpl userDao = new UserDaoImpl();
     private ObjectMapper mapper = new ObjectMapper();
-    ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
 
     /**
      * Регистрирует радиослушателя на сервере. requestJsonString содержит данные о радиослушателе, необходимые для
@@ -108,8 +105,17 @@ public class UserService {
     }
 
     public User getUserByLogin(String login) {
-        for (User user : db.getUserList()) {
+        for (User user : userDao.getUserList()) {
             if (user.getLogin().equals(login)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public User getUserByToken(String token) {
+        for (User user : userDao.getUserList()) {
+            if (user.getToken().equals(token)) {
                 return user;
             }
         }
