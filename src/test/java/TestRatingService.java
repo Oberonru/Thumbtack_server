@@ -1,49 +1,64 @@
-import database.DataBase;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestRatingService {
+    private Server server;
+
+    @Before
+    public void setupServer() {
+        server = new Server();
+        server.startServer("ratingTest.json");
+    }
+
     @Test
     public void test_addRating() throws Exception {
-        Server server = new Server();
-        DataBase db = DataBase.getInstance();
-        server.startServer("ratingTest.json");
-        String requestJsonString = "{\"login\" : \"gamut\", \"songId\" : 1, \"songRaiting\" : 4}";
-        Assert.assertEquals("{}", server.addRaiting(requestJsonString));
+        String requestJsonString = "{\"login\" : \"gamut\", \"songId\" : 1, \"songRating\" : 4}";
+        Assert.assertEquals("{}", server.addRating(requestJsonString));
+        server.stopServer("saveRatingTest.json");
+    }
+    @Test
+    public void test_addRating_ratingNotValid_1() throws Exception {
+        String requestJsonString = "{\"login\" : \"gamut\", \"songId\" : 1, \"songRating\" : 0}";
+        Assert.assertEquals("{\"error\":\"Rating not valid\"}", server.addRating(requestJsonString));
+        server.stopServer("saveRatingTest.json");
+    }
+    @Test
+    public void test_addRating_ratingNotValid_2() throws Exception {
+        String requestJsonString = "{\"login\" : \"gamut\", \"songId\" : 1, \"songRating\" : 6}";
+        Assert.assertEquals("{\"error\":\"Rating not valid\"}", server.addRating(requestJsonString));
+        server.stopServer("saveRatingTest.json");
+    }
+    @Test
+    public void test_addRating_ratingNotValid_3() throws Exception {
+        String requestJsonString = "{\"login\" : \"gamut\", \"songId\" : 1, \"songRating\" : -100}";
+        Assert.assertEquals("{\"error\":\"Rating not valid\"}", server.addRating(requestJsonString));
         server.stopServer("saveRatingTest.json");
     }
 
     @Test
     public void test_deleteRating() throws Exception {
-        Server server = new Server();
-        server.startServer("ratingTest.json");
         String requestJsonString = "{\"token\" : \"1f07e256-e429-4eec-a24a-4b2901eb7cf6\", \"songId\" : 1}";
-        Assert.assertEquals("{}", server.deleteRaiting(requestJsonString));
+        Assert.assertEquals("{}", server.deleteRating(requestJsonString));
     }
 
     @Test
     public void test_deleteRaiting_incorrectToken() throws Exception {
-        Server server = new Server();
-        server.startServer("ratingTest.json");
         String requestJsonString = "{\"token\" : \"fig2020\", \"songId\" : 1}";
-        Assert.assertEquals("\"error\" : \"user not found\"", server.deleteRaiting(requestJsonString));
+        Assert.assertEquals("\"error\" : \"user not found\"", server.deleteRating(requestJsonString));
     }
 
     @Test
     public void test_deleteRating_incorrectSongId() throws Exception {
-        Server server = new Server();
-        server.startServer("ratingTest.json");
         String requestJsonString = "{\"token\" : \"1f07e256-e429-4eec-a24a-4b2901eb7cf6\", \"songId\" : -100}";
-        Assert.assertEquals("\"error\" : \"Song not found\"" ,server.deleteRaiting(requestJsonString));
+        Assert.assertEquals("\"error\" : \"Song not found\"" ,server.deleteRating(requestJsonString));
     }
 
     @Test
     public void test_deleteRating_byLoggedOutUser() throws Exception {
-        Server server = new Server();
-        server.startServer("ratingTest.json");
         server.logOut("{\"token\" : \"1f07e256-e429-4eec-a24a-4b2901eb7cf6\"}");
         String requestJsonString = "{\"token\" : \"1f07e256-e429-4eec-a24a-4b2901eb7cf6\", \"songId\" : 1}";
-        System.out.println(server.deleteRaiting(requestJsonString));
-        Assert.assertEquals("\"error\" : \"user not found\"", server.deleteRaiting(requestJsonString));
+        System.out.println(server.deleteRating(requestJsonString));
+        Assert.assertEquals("\"error\" : \"user not found\"", server.deleteRating(requestJsonString));
     }
 }

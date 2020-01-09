@@ -1,5 +1,6 @@
 package dao;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import database.DataBase;
 import model.Song;
 
@@ -12,7 +13,7 @@ public class SongDaoImpl implements SongDao {
         db.addSong(song);
     }
 
-    public String deleteSong(Song song) {
+    public String deleteSong(Song song) throws Exception {
         return db.deleteSong(song);
     }
 

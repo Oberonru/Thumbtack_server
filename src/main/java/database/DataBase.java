@@ -1,9 +1,9 @@
 package database;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import model.*;
-
+import response.ErrorDtoResponse;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -50,17 +50,18 @@ public class DataBase {
         songList.add(song);
     }
 
-    public String deleteSong(Song song) {
-        //todo: если нет никаких других рейтингов или комментариев, песня может быть удалена - добавить проверку
+    public String deleteSong(Song song) throws JsonProcessingException {
+        List<Comment> songComments = getCommentsBySongId(song.getSongId());
         for (User user : userList) {
             if (user.getLogin().equals(song.getLogin())) {
-                if (frequencyRaitings(song.getSongId()) == 1) {
+                if (getRatingsCount(song.getSongId()) == 1 && songComments.size() == 0) {
                     songList.remove(song);
                     return "{}";
                 }
             }
         }
-        return "{\"error\" : \"The user can't delete song\"}";
+        ErrorDtoResponse response = new ErrorDtoResponse("The user can't delete song");
+        return mapper.writeValueAsString(response);
     }
 
     public void updateRaiting(Rating rating) {
@@ -97,10 +98,11 @@ public class DataBase {
      */
     public void addComment(Comment comment) {
         List<Comment> currentComments = getCommentsBySongId(comment.getSongId());
-        if (currentComments.size() != 0 || currentComments.get(commentList.size() - 1).getLogin().equals(comment.getLogin())) {
+        if (currentComments.size() != 0 && currentComments.get(commentList.size() - 1).getLogin().equals(comment.getLogin())) {
             currentComments.set(currentComments.size() - 1, comment);
+            commentList.add(currentComments.get(currentComments.size() - 1));
         } else {
-            currentComments.add(comment);
+            commentList.add(comment);
         }
     }
 
@@ -116,14 +118,14 @@ public class DataBase {
 
     public Song findSongById(int songId) {
         for (Song song : songList) {
-            if (song.getSongId() == songId) {
+            if (song != null && song.getSongId() == songId) {
                 return song;
             }
         }
         return null;
     }
 
-    public int frequencyRaitings(int songId) {
+    public int getRatingsCount(int songId) {
         int count = 0;
         for (Rating rating : ratingList) {
             if (rating.getSongId() == songId) {
@@ -131,15 +133,6 @@ public class DataBase {
             }
         }
         return count;
-    }
-
-    public User getUserByToken(String token) {
-        for (User user : userList) {
-            if (user.getToken() != null && user.getToken().equals(token)) {
-                return user;
-            }
-        }
-        return null;
     }
 
     public void deleteRaiting(Rating rating) throws Exception {
@@ -166,9 +159,6 @@ public class DataBase {
         }
     }
 
-    /**
-     * Загружает данные из файла
-     */
     public void loadDataToCache(String savedDataFileName) {
         if (savedDataFileName == null || new File(savedDataFileName).length() == 0) {
             System.out.println("Список пользователей пуст, сервер стартует с нуля");

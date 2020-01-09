@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.DataBase;
+import request.LogInDtoRequest;
 import response.ErrorDtoResponse;
 
 import java.io.IOException;
@@ -21,8 +22,9 @@ public class Server {
     private RaitingService raitingService = new RaitingService();
     private CommentService commentService = new CommentService();
     private DataBase db = DataBase.getInstance();
-    private ErrorDtoResponse errorDtoResponse = new ErrorDtoResponse();
     private boolean isStarted;
+    private ObjectMapper mapper = new ObjectMapper();
+    private ErrorDtoResponse response = new ErrorDtoResponse();
 
     /**
      * Производит всю необходимую инициализацию и запускает сервер.
@@ -53,13 +55,25 @@ public class Server {
             String response = userService.registerUser(registerUserJson);
             return response;
         }
-        ObjectMapper mapper = new ObjectMapper();
-        errorDtoResponse.error = "Server is not started!";
-        return mapper.writeValueAsString(errorDtoResponse);
+        ErrorDtoResponse response = new ErrorDtoResponse("Server is not started!");
+        return mapper.writeValueAsString(response);
     }
 
     public String logIn(String requestJsonString) throws IOException {
-        return userService.logIn(requestJsonString);
+        LogInDtoRequest logInRequest;
+
+        try {
+            logInRequest = mapper.readValue(requestJsonString, LogInDtoRequest.class);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse("Request is not valid"));
+        }
+
+        try {
+            String token = userService.logIn(logInRequest);
+            return mapper.writeValueAsString(token);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
     }
 
     public String logOut(String requestJsonString) throws IOException {
@@ -70,19 +84,27 @@ public class Server {
         return songService.addSong(requestJsonString);
     }
 
-    public String deleteSong(String requestJsonString) throws  Exception {
+    public String deleteSong(String requestJsonString) throws Exception {
         return songService.deleteSong(requestJsonString);
     }
 
-    public String addRaiting(String requestJsonString) throws Exception {
+    public String addRating(String requestJsonString) throws Exception {
         return raitingService.addRaiting(requestJsonString);
     }
 
-    public String deleteRaiting(String requestJsonString) throws Exception {
+    public String deleteRating(String requestJsonString) throws Exception {
         return raitingService.deleteRating(requestJsonString);
     }
 
     public String addComment(String requestJsonString) throws Exception {
         return commentService.addComment(requestJsonString);
+    }
+
+    public String getSongs(String requestJsonString) throws Exception {
+        return songService.getSongs(requestJsonString);
+    }
+
+    public String getSongByComposers(String requestJsonString) throws Exception {
+        return songService.findSongByComposer(requestJsonString);
     }
 }

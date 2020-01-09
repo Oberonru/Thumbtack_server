@@ -2,14 +2,12 @@ package model;
 
 public class Song {
     private String songName;
-    private String[] composer;
+    private String[] composers;
     private String[] author;
     private String musician;
     private double songDuration;
     private String login;
-
     private int songId;
-    //private int songRaiting;
 
     public Song() {
     }
@@ -22,12 +20,12 @@ public class Song {
         this.songName = songName;
     }
 
-    public String[] getComposer() {
-        return composer;
+    public String[] getComposers() {
+        return composers;
     }
 
-    public void setComposer(String[] composer) {
-        this.composer = composer;
+    public void setComposers(String[] composers) {
+        this.composers = composers;
     }
 
     public String[] getAuthor() {

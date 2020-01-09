@@ -2,7 +2,6 @@ package dao;
 
 import database.DataBase;
 import model.User;
-
 import java.util.List;
 
 public class UserDaoImpl implements UserDao {
@@ -23,10 +22,6 @@ public class UserDaoImpl implements UserDao {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public User getUserByToken(String token) {
-        return db.getUserByToken(token);
     }
 
     public List<User> getUserList() {

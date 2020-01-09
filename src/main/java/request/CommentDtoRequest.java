@@ -4,6 +4,7 @@ public class CommentDtoRequest {
     private String token;
     private String content;
     private int songId;
+    private int replyCommentId;
 
     public CommentDtoRequest() {}
 
@@ -21,5 +22,9 @@ public class CommentDtoRequest {
 
     public int getSongId() {
         return songId;
+    }
+
+    public int getReplyCommentId() {
+        return replyCommentId;
     }
 }

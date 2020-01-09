@@ -1,13 +1,20 @@
 import database.DataBase;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestServer {
 
+    private Server server;
+
+    @Before
+    public void setupServer() {
+        server = new Server();
+    }
+
     @Test
     public void test_startServer() throws Exception {
         DataBase db = DataBase.getInstance();
-        Server server = new Server();
         server.startServer("testServerData.json");
         Assert.assertEquals(db.getUserList().size(), 1);
         Assert.assertEquals(db.getSongList().size(), 2);
@@ -29,7 +36,6 @@ public class TestServer {
 
     @Test
     public void test_registerUser() throws Exception {
-        Server server = new Server();
         DataBase db = DataBase.getInstance();
         server.startServer("testServerData.json");
         String registerUserJson = "{\"firstName\":\"Petro\",\"lastName\":\"First\",\"login\":\"petrucsho\"," +
@@ -41,7 +47,6 @@ public class TestServer {
 
     @Test
     public void test_registerUser_paramIs_notValid() throws Exception {
-        Server server = new Server();
         server.startServer("testServerData.json");
         String requestJsonString = "{\"firstName\":\"B\",\"lastName\":\"Morkovkin\",\"login\":\"boryan\"," +
                 "\"password\":\"321\"}";
@@ -50,7 +55,6 @@ public class TestServer {
 
     @Test
     public void test_registerUser_twoEqualsLogin() throws Exception {
-        Server server = new Server();
         server.startServer("testServerData.json");
         String requestJsonString = "{\"firstName\":\"Boryaha\",\"lastName\":\"Morkovkin\",\"login\":\"gamer\"," +
                 "\"password\":\"321\"}";
@@ -62,42 +66,38 @@ public class TestServer {
 
     @Test
     public void test_addSong() throws Exception {
-        Server server = new Server();
         DataBase db = DataBase.getInstance();
         server.startServer("testServerData.json");
         String requestLoginJsonString = "{\"login\" : \"uaSek\", \"password\" : \"123s\" }";
-        String tokenString = server.logIn(requestLoginJsonString);
+        server.logIn(requestLoginJsonString);
         String requestJsonString = "{\"songName\" : \"Musjaka\", \"composer\" : [\"Muzyak\", \"MuzyakMladshoi\"]," +
                 " \"author\" : [\"OnYe\"], \"musician\" : \"MusyagGroup\",  \"songDuration\" : 0.8," +
                 " \"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
         Assert.assertEquals(db.getSongList().size(), 2);
-        System.out.println(server.addSong(requestJsonString));
+        Assert.assertEquals("{}", server.addSong(requestJsonString));
         Assert.assertEquals(db.getSongList().size(), 3);
     }
 
     @Test
     public void test_addSong_notLogined() throws Exception {
-        Server server = new Server();
         server.startServer("testServerData.json");
         String requestJsonString = "{\"songName\" : \"TucMuc\", \"composer\" : [\"Obdolbish\", \"Ukurish\"]," +
                 " \"author\" : [\"Bomj\", \"Bezdar'\"], \"musician\" : \"Saruhanov\",  \"songDuration\" : 3.8," +
                 " \"token\" : \"null\"}";
-        Assert.assertEquals(server.addSong(requestJsonString), "{\"error\" : \"User not found\"}");
+        Assert.assertEquals("{\"error\":\"User not found\"}", server.addSong(requestJsonString));
     }
 
     @Test
     public void test_addSong_loginIsFailure() throws Exception {
-        Server server = new Server();
         server.startServer("testServerData.json");
         String requestJsonString = "{\"songName\" : \"TucMuc\", \"composer\" : [\"Obdolbish\", \"Ukurish\"]," +
                 " \"author\" : [\"Bomj\", \"Bezdar'\"], \"musician\" : \"Saruhanov\",  \"songDuration\" : 3.8," +
                 " \"token\" : \"768757568-213f-4018-b61f-d4b1a0a78400\"}";
-        Assert.assertEquals(server.addSong(requestJsonString), "{\"error\" : \"User not found\"}");
+        Assert.assertEquals("{\"error\":\"User not found\"}", server.addSong(requestJsonString));
     }
 
     @Test
     public void test_addSong_logOut() throws Exception {
-        Server server = new Server();
         DataBase db = DataBase.getInstance();
         server.startServer("testServerData.json");
         String requestLoginJsonString = "{\"login\" : \"uaSek\", \"password\" : \"123s\" }";
@@ -113,6 +113,6 @@ public class TestServer {
         String requestJsonString2 = "{\"songName\" : \"Musjaka\", \"composer\" : [\"Muzyak\", \"MuzyakMladshoi\"]," +
                 " \"author\" : [\"OnYe\"], \"musician\" : \"MusyagGroup\",  \"songDuration\" : 0.8," +
                 " \"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
-        Assert.assertEquals(server.addSong(requestJsonString2), "{\"error\" : \"User not found\"}");
+        Assert.assertEquals("{\"error\":\"User not found\"}", server.addSong(requestJsonString2));
     }
 }

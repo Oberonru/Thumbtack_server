@@ -2,6 +2,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import model.User;
 import org.junit.Assert;
 import org.junit.Test;
+import request.LogInDtoRequest;
 
 public class TestUserService {
     ObjectMapper mapper = new ObjectMapper();
@@ -31,7 +32,8 @@ public class TestUserService {
         Server server = new Server();
         server.startServer("testServerData.json");
         String requestJsonString = "{\"login\" : \"vasilii\", \"password\" : \"123s\"}";
-        userService.logIn(requestJsonString);
+        LogInDtoRequest request = mapper.readValue(requestJsonString, LogInDtoRequest.class);
+        userService.logIn(request);
     }
 
     @Test

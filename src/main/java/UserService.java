@@ -1,6 +1,5 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.UserDaoImpl;
-import database.DataBase;
 import model.User;
 import request.LogInDtoRequest;
 import request.LogOutDtoRequest;
@@ -53,16 +52,19 @@ public class UserService {
      * и радиослушатель, вышедший с сервера, входит на него снова (метод login), он получает новый токен, который может
      * использовать во всех операциях вплоть до нового выхода.
      */
-    public String logIn(String requestJsonString) throws IOException {
-        LogInDtoRequest logInRequest = mapper.readValue(requestJsonString, LogInDtoRequest.class);
+    public String logIn(LogInDtoRequest logInRequest) throws Exception {
         User user = getUserByLogin(logInRequest.getLogin());
-        if (user != null) {
-            if (user.getToken() == null) {
-                user.setToken(generateToken());
-                userDao.updateUser(user);
-            }
-            return mapper.writeValueAsString(user.getToken());
-        } else return "{\"error\" : \"login not found\"}";
+
+        if (user == null) {
+            throw new Exception("User is not found");
+        }
+
+        if (user.getToken() == null) {
+            user.setToken(generateToken());
+            userDao.updateUser(user);
+        }
+
+        return user.getToken();
     }
 
     /**
@@ -74,7 +76,7 @@ public class UserService {
 
     public String logOut(String requestJsonString) throws IOException {
         LogOutDtoRequest logOutRequest = mapper.readValue(requestJsonString, LogOutDtoRequest.class);
-        User user = userDao.getUserByToken(logOutRequest.getToken());
+        User user = getUserByToken(logOutRequest.getToken());
         if (user != null) {
             user.setToken(null);
             userDao.updateUser(user);
@@ -115,11 +117,16 @@ public class UserService {
 
     public User getUserByToken(String token) {
         for (User user : userDao.getUserList()) {
-            if (user.getToken().equals(token)) {
+            if (user.getToken() != null && user.getToken().equals(token)) {
                 return user;
             }
         }
         return null;
+    }
+
+    public boolean verifyToken(String token) throws Exception {
+        User user = getUserByToken(token);
+        return user != null;
     }
 
     private String generateToken() {

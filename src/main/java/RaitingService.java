@@ -5,12 +5,12 @@ import model.Song;
 import model.User;
 import request.DeleteSongDtoRatingRequest;
 import request.RatingDtoRequest;
+import response.ErrorDtoResponse;
 
 public class RaitingService {
     private UserService userService = new UserService();
     private ObjectMapper mapper = new ObjectMapper();
     private DataBase db = DataBase.getInstance();
-    private SongService songService = new SongService();
 
     /**
      * Радиослушатель, предложивший песню в состав концерта, считается автором этого предложения.
@@ -24,15 +24,18 @@ public class RaitingService {
     public String addRaiting(String requestJsonString) throws Exception {
         RatingDtoRequest ratingRequest = mapper.readValue(requestJsonString, RatingDtoRequest.class);
         if (!verifyRating(ratingRequest.getSongRating())) {
-            return "{\"error\" : \"raiting is not valid\"}";
+            ErrorDtoResponse response = new ErrorDtoResponse("Rating not valid");
+            return mapper.writeValueAsString(response);
         }
         User user = userService.getUserByLogin(ratingRequest.getLogin());
         if (user == null) {
-            return "{\"error\" : \"User not found\"}";
+            ErrorDtoResponse response = new ErrorDtoResponse("User not found");
+            return mapper.writeValueAsString(response);
         }
         Song song = db.findSongById(ratingRequest.getSongId());
         if (song == null) {
-           return "\"error\" : \"Song not found\"";
+            ErrorDtoResponse response = new ErrorDtoResponse("Song not found");
+            return mapper.writeValueAsString(response);
         }
         db.updateRaiting(new Rating(user.getLogin(), song.getSongId(), ratingRequest.getSongRating()));
         return "{}";
@@ -45,7 +48,7 @@ public class RaitingService {
     public String deleteRating(String requestJsonString) throws Exception {
         DeleteSongDtoRatingRequest deleteRequest = mapper.readValue(requestJsonString, DeleteSongDtoRatingRequest.class);
 
-        User user = db.getUserByToken(deleteRequest.getToken());
+        User user = userService.getUserByToken(deleteRequest.getToken());
         Song song = db.findSongById(deleteRequest.getSongId());
         if (song == null) {
             return "\"error\" : \"Song not found\"";
