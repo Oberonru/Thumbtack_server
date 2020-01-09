@@ -4,18 +4,12 @@ import model.User;
 import request.LogInDtoRequest;
 import request.LogOutDtoRequest;
 import request.RegisterUserDtoRequest;
-import response.ErrorDtoResponse;
-import response.RegisterUserDtoResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Будет лучше, если сам сервер ниекаких операций производить не будет, а будет делегировать из
- * соответствующему сервису
- */
 public class UserService {
     private UserDaoImpl userDao = new UserDaoImpl();
     private ObjectMapper mapper = new ObjectMapper();
@@ -29,23 +23,24 @@ public class UserService {
      * в результате регистрации.
      */
 
-    public String registerUser(String requestJsonString) throws Exception {
-        RegisterUserDtoRequest request = mapper.readValue(requestJsonString, RegisterUserDtoRequest.class);
+    public String registerUser(RegisterUserDtoRequest request) throws Exception {
         if (validateParams(
-                request.getFirstName(), request.getLastName(), request.getLogin(), request.getPassword()
-        ).size() > 0) {
-            ErrorDtoResponse errorResponse = new ErrorDtoResponse();
-            errorResponse.error = "Params is not valid";
-            return mapper.writeValueAsString(errorResponse);
+                request.getFirstName(), request.getLastName(), request.getLogin(), request.getPassword()).size() > 0) {
+            throw new Exception("Params is not valid");
+        }
+
+        User user = getUserByLogin(request.getLogin());
+        if (user != null) {
+            if (request.getLogin().equals(user.getLogin())) {
+                throw new Exception("Login is already used");
+            }
         }
 
         User newUser = createUserWithToken(request.getFirstName(), request.getLastName(), request.getLogin(),
                 request.getPassword());
-
         userDao.insert(newUser);
-        RegisterUserDtoResponse response = new RegisterUserDtoResponse();
-        response.setToken(newUser.getToken());
-        return mapper.writeValueAsString(response);
+
+        return newUser.getToken();
     }
 
     /**
@@ -53,11 +48,12 @@ public class UserService {
      * использовать во всех операциях вплоть до нового выхода.
      */
     public String logIn(LogInDtoRequest logInRequest) throws Exception {
-        User user = getUserByLogin(logInRequest.getLogin());
+        User user = getUserByLogin(logInRequest.getLogin(), logInRequest.getPassword());
 
         if (user == null) {
-            ErrorDtoResponse response = new ErrorDtoResponse("User not found");
-            return response.error;
+//            ErrorDtoResponse response = new ErrorDtoResponse("User not found");
+//            return response.error;
+            throw new Exception("User not found");
         }
 
         if (user.getToken() == null) {
@@ -65,7 +61,7 @@ public class UserService {
             userDao.updateUser(user);
         }
 
-        return user.getToken();
+        return "{}";
     }
 
     /**
@@ -107,6 +103,15 @@ public class UserService {
         return user;
     }
 
+    public User getUserByLogin(String login, String password) {
+        for (User user : userDao.getUserList()) {
+            if (user.getLogin().equals(login) && user.getPassword().equals(password)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
     public User getUserByLogin(String login) {
         for (User user : userDao.getUserList()) {
             if (user.getLogin().equals(login)) {
@@ -143,7 +148,7 @@ public class UserService {
         if (!validateName(lastName)) {
             errors.add("last name is not valid");
         }
-        if (getUserByLogin(login) != null) {
+        if (getUserByLogin(login, password) != null) {
             errors.add("login is not valid");
         }
         return errors;

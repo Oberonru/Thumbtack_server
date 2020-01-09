@@ -1,6 +1,7 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.DataBase;
 import request.LogInDtoRequest;
+import request.RegisterUserDtoRequest;
 import response.ErrorDtoResponse;
 
 import java.io.IOException;
@@ -24,7 +25,6 @@ public class Server {
     private DataBase db = DataBase.getInstance();
     private boolean isStarted;
     private ObjectMapper mapper = new ObjectMapper();
-    private ErrorDtoResponse response = new ErrorDtoResponse();
 
     /**
      * Производит всю необходимую инициализацию и запускает сервер.
@@ -51,26 +51,38 @@ public class Server {
     }
 
     public String registerUser(String registerUserJson) throws Exception {
+        RegisterUserDtoRequest request;
+
         if (isStarted) {
-            String response = userService.registerUser(registerUserJson);
-            return response;
+            try {
+                request = mapper.readValue(registerUserJson, RegisterUserDtoRequest.class);
+            } catch (Exception e) {
+                return mapper.writeValueAsString(new ErrorDtoResponse("Request is not valid"));
+            }
+
+            try {
+                String token = userService.registerUser(request);
+                return mapper.writeValueAsString(token);
+            } catch (Exception e) {
+                return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+            }
         }
-        ErrorDtoResponse response = new ErrorDtoResponse("Server is not started!");
-        return mapper.writeValueAsString(response);
+
+        return mapper.writeValueAsString(new ErrorDtoResponse("Server is not started!"));
     }
 
-    public String logIn(String requestJsonString) throws IOException {
-        LogInDtoRequest logInRequest;
+    public String logIn(String requestJsonString) throws Exception {
+        LogInDtoRequest request;
 
         try {
-            logInRequest = mapper.readValue(requestJsonString, LogInDtoRequest.class);
+            request = mapper.readValue(requestJsonString, LogInDtoRequest.class);
         } catch (Exception e) {
-            return mapper.writeValueAsString(new ErrorDtoResponse("Request is not valid"));
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
         }
 
         try {
             //todo: по идее здесь всегда валидное значение, как проверить блок catch, как в него передать невалидный токен?
-            String token = userService.logIn(logInRequest);
+            String token = userService.logIn(request);
             return mapper.writeValueAsString(token);
         } catch (Exception e) {
             return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));

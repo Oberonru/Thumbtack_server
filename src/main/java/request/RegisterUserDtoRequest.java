@@ -13,7 +13,8 @@ public class RegisterUserDtoRequest {
         this.password = password;
     }
 
-    public RegisterUserDtoRequest(){}
+    public RegisterUserDtoRequest() {
+    }
 
     public String getFirstName() {
         return firstName;

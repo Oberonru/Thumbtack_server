@@ -1,3 +1,4 @@
+import dao.UserDaoImpl;
 import database.DataBase;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,13 +37,13 @@ public class TestServer {
 
     @Test
     public void test_registerUser() throws Exception {
-        DataBase db = DataBase.getInstance();
+        UserDaoImpl userDao = new UserDaoImpl();
         server.startServer("testServerData.json");
         String registerUserJson = "{\"firstName\":\"Petro\",\"lastName\":\"First\",\"login\":\"petrucsho\"," +
                 "\"password\":\"3432s3s\"}";
         server.registerUser(registerUserJson);
-        Assert.assertEquals(db.getUserList().size(), 2);
-        Assert.assertEquals(db.getUserList().get(1).getFirstName(), "Petro");
+        Assert.assertEquals(userDao.getUserList().size(), 3);
+        Assert.assertEquals("Petro", userDao.getUserList().get(1).getFirstName());
     }
 
     @Test
@@ -50,7 +51,7 @@ public class TestServer {
         server.startServer("testServerData.json");
         String requestJsonString = "{\"firstName\":\"B\",\"lastName\":\"Morkovkin\",\"login\":\"boryan\"," +
                 "\"password\":\"321\"}";
-        Assert.assertEquals(server.registerUser(requestJsonString), "{\"error\":\"Params is not valid\"}");
+        Assert.assertEquals("{\"error\":\"Params is not valid\"}", server.registerUser(requestJsonString));
     }
 
     @Test
@@ -58,34 +59,40 @@ public class TestServer {
         server.startServer("testServerData.json");
         String requestJsonString = "{\"firstName\":\"Boryaha\",\"lastName\":\"Morkovkin\",\"login\":\"gamer\"," +
                 "\"password\":\"321\"}";
+        server.registerUser(requestJsonString);
         String registerJsonString2 = "{\"firstName\":\"Petro\",\"lastName\":\"First\",\"login\":\"gamer\"," +
                 "\"password\":\"3432s3s\"}";
-        server.registerUser(requestJsonString);
-        Assert.assertEquals(server.registerUser(registerJsonString2), "{\"error\":\"Params is not valid\"}");
+
+        Assert.assertEquals("{\"error\":\"Login is already used\"}", server.registerUser(registerJsonString2));
     }
 
     @Test
-    public void test_logIn_failureFirstNameData() throws Exception {
+    public void  test_logIn() throws Exception {
         server.startServer("testServerData.json");
-        String requestJsonString = "{\"NAME\":\"Boryaha\",\"lastName\":\"Morkovkin\",\"login\":\"gamer\"," +
-                "\"password\":\"321\"}";
-        Assert.assertEquals("{\"error\":\"Request is not valid\"}", server.logIn(requestJsonString));
+        String requestJsonString = "{\"login\" : \"uaSek\", \"password\" : \"123s\"}";
+        Assert.assertEquals("\"{}\"", server.logIn(requestJsonString));
     }
 
     @Test
-    public void test_logIn_failureLoginData() throws Exception {
+    public void test_logIn_loginNotValid() throws Exception {
+        server.startServer("testServerData.json");
+        String requestJsonString = "{\"login\" : \"figZnaetHto\", \"password\" : \"undefined\"}";
+        Assert.assertEquals("{\"error\":\"User not found\"}", server.logIn(requestJsonString));
+    }
+
+    @Test
+    public void  test_logIn_passwordNotValid() throws Exception {
+        server.startServer("testServerData.json");
+        String requestJsonString = "{\"login\" : \"uaSek\", \"password\" : \"321\"}";
+        Assert.assertEquals("{\"error\":\"User not found\"}", server.logIn(requestJsonString));
+    }
+
+    @Test
+    public void test_logIn_dataNotValid() throws Exception {
         server.startServer("testServerData.json");
         String requestJsonString = "{\"firstName\":\"Boryaha\",\"lastName\":\"Morkovkin\",\"log\":\"gamer\"," +
                 "\"password\":\"321\"}";
-        Assert.assertEquals("{\"error\":\"Request is not valid\"}", server.logIn(requestJsonString));
-    }
-
-    @Test
-    public void test_logIn_failureToken() {
-        //todo: не понятно как реализовать здесь проверку
-        server.startServer("testServerData.json");
-        String requestJsonString = "{\"firstName\":\"Boryaha\",\"lastName\":\"Morkovkin\",\"log\":\"gamer\"," +
-                "\"password\":\"321\"}";
+        System.out.println(server.logIn(requestJsonString));
     }
 
     @Test
