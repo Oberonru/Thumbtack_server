@@ -42,8 +42,6 @@ public class TestUserService {
        }
    }
 
-
-
     @Test
     public void test_logIn() throws Exception {
         String requestJsonString = "{\"login\" : \"uaSek\", \"password\" : \"123s\"}";

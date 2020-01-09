@@ -67,7 +67,7 @@ public class TestServer {
     }
 
     @Test
-    public void  test_logIn() throws Exception {
+    public void test_logIn() throws Exception {
         server.startServer("testServerData.json");
         String requestJsonString = "{\"login\" : \"uaSek\", \"password\" : \"123s\"}";
         Assert.assertEquals("\"{}\"", server.logIn(requestJsonString));
@@ -81,7 +81,7 @@ public class TestServer {
     }
 
     @Test
-    public void  test_logIn_passwordNotValid() throws Exception {
+    public void test_logIn_passwordNotValid() throws Exception {
         server.startServer("testServerData.json");
         String requestJsonString = "{\"login\" : \"uaSek\", \"password\" : \"321\"}";
         Assert.assertEquals("{\"error\":\"User not found\"}", server.logIn(requestJsonString));
@@ -93,6 +93,37 @@ public class TestServer {
         String requestJsonString = "{\"firstName\":\"Boryaha\",\"lastName\":\"Morkovkin\",\"log\":\"gamer\"," +
                 "\"password\":\"321\"}";
         System.out.println(server.logIn(requestJsonString));
+    }
+
+    @Test
+    public void test_logOut() throws Exception {
+        server.startServer("testServerData.json");
+        String requestJsonString = "{\"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
+        Assert.assertEquals("{}", server.logOut(requestJsonString));
+        server.stopServer("saveTestServerData.json");
+    }
+    @Test
+    public void test_logOut_twice() throws Exception {
+        server.startServer("testServerData.json");
+        String requestJsonString = "{\"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
+        Assert.assertEquals("\"{}\"", server.logOut(requestJsonString));
+        Assert.assertEquals("{\"error\":\"User not found\"}", server.logOut(requestJsonString));
+    }
+
+    @Test
+    public void test_logOut_dataNotValid() throws Exception {
+        server.startServer("testServerData.json");
+        String requestJsonString = "{\"songName\" : \"Musjaka\", \"composer\" : [\"Muzyak\", \"MuzyakMladshoi\"]," +
+                " \"author\" : [\"OnYe\"], \"musician\" : \"MusyagGroup\",  \"songDuration\" : 0.8," +
+                " \"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
+        System.out.println(server.logOut(requestJsonString));
+    }
+
+    @Test
+    public void test_logOut_tokenNotValid() throws Exception {
+        server.startServer("testServerData.json");
+        String requestJsonString = "{\"token\" : \"Krakazyabr1111111\"}";
+        Assert.assertEquals("{\"error\":\"User not found\"}", server.logOut(requestJsonString));
     }
 
     @Test

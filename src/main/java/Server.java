@@ -1,21 +1,10 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.DataBase;
 import request.LogInDtoRequest;
+import request.LogOutDtoRequest;
 import request.RegisterUserDtoRequest;
 import response.ErrorDtoResponse;
 
-import java.io.IOException;
-
-/**
- * * Будет лучше, если класс Server сам никакие операции выполнять не будет, а будет делегировать их выполнение
- * * соответствующему классу, который мы назовем классом сервиса (например, UserService, SongService и т.д), вызывая
- * * соответствующий метод из этого класса. Экземпляры этих классов должны быть полями класса Server.
- * * <p>
- * * Итак, класс Server передает полученный json соответствующему классу сервиса. Этот класс должен распарсить json,
- * * проанализировать и проверить находящийся в нем запрос, выполнить его (конечно, если в запросе нет ошибок) и вернуть
- * * ответ. Если в запросе имеются ошибки, класс сервиса должен тут же вернуть ответ с полем “error”, не производя
- * * дальнейшей обработки.
- */
 public class Server {
 
     private UserService userService = new UserService();
@@ -30,8 +19,6 @@ public class Server {
      * Производит всю необходимую инициализацию и запускает сервер.
      * savedDataFileName - имя файла, в котором было сохранено состояние сервера.  Если savedDataFileName == null,
      * восстановление состояния не производится, сервер стартует “с нуля”.
-     *
-     * @param savedDataFileName
      */
 
     public void startServer(String savedDataFileName) {
@@ -42,8 +29,6 @@ public class Server {
     /**
      * Останавливает сервер и записывает все его содержимое в файл сохранения с именем savedDataFileName.
      * Если savedDataFileName == null, запись содержимого не производится.
-     *
-     * @param savedDataFileName
      */
     public void stopServer(String savedDataFileName) throws Exception {
         isStarted = false;
@@ -89,8 +74,21 @@ public class Server {
         }
     }
 
-    public String logOut(String requestJsonString) throws IOException {
-        return userService.logOut(requestJsonString);
+    public String logOut(String requestJsonString) throws Exception {
+        LogOutDtoRequest request;
+
+        try {
+            request = mapper.readValue(requestJsonString, LogOutDtoRequest.class);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+
+        try {
+            String response = userService.logOut(request);
+            return mapper.writeValueAsString(response);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
     }
 
     public String addSong(String requestJsonString) throws Exception {

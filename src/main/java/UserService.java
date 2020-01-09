@@ -5,7 +5,6 @@ import request.LogInDtoRequest;
 import request.LogOutDtoRequest;
 import request.RegisterUserDtoRequest;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -47,12 +46,10 @@ public class UserService {
      * и радиослушатель, вышедший с сервера, входит на него снова (метод login), он получает новый токен, который может
      * использовать во всех операциях вплоть до нового выхода.
      */
-    public String logIn(LogInDtoRequest logInRequest) throws Exception {
-        User user = getUserByLogin(logInRequest.getLogin(), logInRequest.getPassword());
+    public String logIn(LogInDtoRequest request) throws Exception {
+        User user = getUserByLogin(request.getLogin(), request.getPassword());
 
         if (user == null) {
-//            ErrorDtoResponse response = new ErrorDtoResponse("User not found");
-//            return response.error;
             throw new Exception("User not found");
         }
 
@@ -71,23 +68,20 @@ public class UserService {
      * <p>
      */
 
-    public String logOut(String requestJsonString) throws IOException {
-        LogOutDtoRequest logOutRequest = mapper.readValue(requestJsonString, LogOutDtoRequest.class);
+    public String logOut(LogOutDtoRequest logOutRequest) throws Exception {
         User user = getUserByToken(logOutRequest.getToken());
-        if (user != null) {
-            user.setToken(null);
-            userDao.updateUser(user);
-            return "{}";
+        if (user == null) {
+            throw new Exception("User not found");
         }
-        return "{\"error\" : \"user not found\"}";
+
+        user.setToken(null);
+        userDao.updateUser(user);
+        return "{}";
     }
 
     /**
      * Зарегистрированный на сервере радиослушатель может покинуть сервер, в этом случае вся информация о нем
      * удаляется, а список сделанных им предложений обрабатывается как указано ниже.
-     *
-     * @param requestJsonString
-     * @return user
      */
     public String exitToServer(String requestJsonString) {
         return "fig";
@@ -130,7 +124,7 @@ public class UserService {
         return null;
     }
 
-    public boolean verifyToken(String token) throws Exception {
+    public boolean verifyToken(String token) {
         User user = getUserByToken(token);
         return user != null;
     }

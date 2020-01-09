@@ -1,0 +1,32 @@
+{
+  "users" : [ {
+    "firstName" : "Uasya",
+    "lastName" : "Pupkin",
+    "login" : "uaSek",
+    "password" : "123s",
+    "token" : null
+  } ],
+  "songs" : [ {
+    "songName" : "Elochka",
+    "composers" : [ "Zayac", "Volk" ],
+    "author" : [ "Volk", "Zayac" ],
+    "musician" : "Capel'",
+    "songDuration" : 5.0,
+    "login" : "uaSek",
+    "songId" : 1
+  }, {
+    "songName" : "second",
+    "composers" : [ "BBBB", "AAAA" ],
+    "author" : [ "CCC", "DDD" ],
+    "musician" : "Songer",
+    "songDuration" : 1.0,
+    "login" : "pedro",
+    "songId" : 2
+  } ],
+  "ratings" : [ {
+    "login" : "uaSek",
+    "songId" : 2,
+    "songRating" : 1
+  } ],
+  "comments" : [ ]
+}
