@@ -56,7 +56,8 @@ public class UserService {
         User user = getUserByLogin(logInRequest.getLogin());
 
         if (user == null) {
-            throw new Exception("User is not found");
+            ErrorDtoResponse response = new ErrorDtoResponse("User not found");
+            return response.error;
         }
 
         if (user.getToken() == null) {

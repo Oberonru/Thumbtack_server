@@ -46,7 +46,7 @@ public class TestServer {
     }
 
     @Test
-    public void test_registerUser_paramIs_notValid() throws Exception {
+    public void test_registerUser_name_notValid() throws Exception {
         server.startServer("testServerData.json");
         String requestJsonString = "{\"firstName\":\"B\",\"lastName\":\"Morkovkin\",\"login\":\"boryan\"," +
                 "\"password\":\"321\"}";
@@ -62,6 +62,30 @@ public class TestServer {
                 "\"password\":\"3432s3s\"}";
         server.registerUser(requestJsonString);
         Assert.assertEquals(server.registerUser(registerJsonString2), "{\"error\":\"Params is not valid\"}");
+    }
+
+    @Test
+    public void test_logIn_failureFirstNameData() throws Exception {
+        server.startServer("testServerData.json");
+        String requestJsonString = "{\"NAME\":\"Boryaha\",\"lastName\":\"Morkovkin\",\"login\":\"gamer\"," +
+                "\"password\":\"321\"}";
+        Assert.assertEquals("{\"error\":\"Request is not valid\"}", server.logIn(requestJsonString));
+    }
+
+    @Test
+    public void test_logIn_failureLoginData() throws Exception {
+        server.startServer("testServerData.json");
+        String requestJsonString = "{\"firstName\":\"Boryaha\",\"lastName\":\"Morkovkin\",\"log\":\"gamer\"," +
+                "\"password\":\"321\"}";
+        Assert.assertEquals("{\"error\":\"Request is not valid\"}", server.logIn(requestJsonString));
+    }
+
+    @Test
+    public void test_logIn_failureToken() {
+        //todo: не понятно как реализовать здесь проверку
+        server.startServer("testServerData.json");
+        String requestJsonString = "{\"firstName\":\"Boryaha\",\"lastName\":\"Morkovkin\",\"log\":\"gamer\"," +
+                "\"password\":\"321\"}";
     }
 
     @Test

@@ -25,15 +25,23 @@ public class TestUserService {
         Assert.assertEquals(user.getPassword(), "12345");
     }
 
-    //отрабатывает правильно, меняет логин, а как проверять?
     @Test
     public void test_logIn() throws Exception {
         UserService userService = new UserService();
         Server server = new Server();
         server.startServer("testServerData.json");
-        String requestJsonString = "{\"login\" : \"vasilii\", \"password\" : \"123s\"}";
+        String requestJsonString = "{\"login\" : \"uaSek\", \"password\" : \"123s\"}";
         LogInDtoRequest request = mapper.readValue(requestJsonString, LogInDtoRequest.class);
-        userService.logIn(request);
+        System.out.println(userService.logIn(request));
+    }
+    @Test
+    public void test_logIn_failureLogin() throws Exception {
+        UserService userService = new UserService();
+        Server server = new Server();
+        server.startServer("testServerData.json");
+        String requestJsonString = "{\"login\" : \"figZnaetHto\", \"password\" : \"undefined\"}";
+        LogInDtoRequest request = mapper.readValue(requestJsonString, LogInDtoRequest.class);
+        Assert.assertEquals("User not found", userService.logIn(request));
     }
 
     @Test

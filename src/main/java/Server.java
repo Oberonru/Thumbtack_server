@@ -69,6 +69,7 @@ public class Server {
         }
 
         try {
+            //todo: по идее здесь всегда валидное значение, как проверить блок catch, как в него передать невалидный токен?
             String token = userService.logIn(logInRequest);
             return mapper.writeValueAsString(token);
         } catch (Exception e) {
