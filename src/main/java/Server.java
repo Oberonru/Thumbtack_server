@@ -179,7 +179,19 @@ public class Server {
     }
 
     public String getSongs(String requestJsonString) throws Exception {
-        return songService.getSongs(requestJsonString);
+        GetSongsDtoRequest request;
+        try {
+            request = mapper.readValue(requestJsonString, GetSongsDtoRequest.class);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+
+        try {
+            String response = songService.getSongs(request);
+            return mapper.writeValueAsString(response);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
     }
 
     public String getSongByComposers(String requestJsonString) throws Exception {

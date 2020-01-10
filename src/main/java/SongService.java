@@ -86,16 +86,16 @@ public class SongService {
         return songDao.deleteSong(song);
     }
 
-    public String getSongs(String requestJsonString) throws Exception {
-        GetSongsDtoRequest getSongsDtoRequest = mapper.readValue(requestJsonString, GetSongsDtoRequest.class);
-        User user = userService.getUserByToken(getSongsDtoRequest.getToken());
-        if (user != null) {
-            GetSongsDtoResponse getSongsDtoResponse = new GetSongsDtoResponse();
-            getSongsDtoResponse.getSongList().addAll(songDao.getSongList());
-            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(getSongsDtoResponse);
+    public String getSongs(GetSongsDtoRequest request) throws Exception {
+
+        User user = userService.getUserByToken(request.getToken());
+        if (user == null) {
+            throw new Exception("User not found");
         }
-        ErrorDtoResponse response = new ErrorDtoResponse("User not found");
-        return mapper.writeValueAsString(response);
+        GetSongsDtoResponse getSongsDtoResponse = new GetSongsDtoResponse();
+        getSongsDtoResponse.getSongList().addAll(songDao.getSongList());
+
+        return mapper.writeValueAsString(getSongsDtoResponse);
     }
 
     public String findSongByComposer(String requestJsonString) throws Exception {
