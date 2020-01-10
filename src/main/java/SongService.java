@@ -62,7 +62,7 @@ public class SongService {
                 request.getMusician(), request.getSongDuration(), request.getToken());
         generateSongId(newSong);
         songDao.insert(newSong);
-        ratingDao.updateRating(new Rating(user.getLogin(), newSong.getSongId(), 5));
+        ratingDao.insert(new Rating(user.getLogin(), newSong.getSongId(), 5));
 
         return "{}";
     }
@@ -81,8 +81,6 @@ public class SongService {
             throw new Exception("User not found");
         }
         if (song == null) {
-//            ErrorDtoResponse response = new ErrorDtoResponse("Song not found");
-//            return mapper.writeValueAsString(response);
             throw new Exception("Song not found");
         }
         return songDao.deleteSong(song);

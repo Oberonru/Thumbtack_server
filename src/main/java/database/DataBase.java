@@ -58,6 +58,21 @@ public class DataBase {
                     songList.remove(song);
                     return "{}";
                 }
+
+                /**
+                 * Если же к этому моменту имеются другие оценки этого
+                 *      * предложения, то удаляется лишь оценка этого предложения, сделанная автором предложения (то есть его оценка 5),
+                 *      * а само предложение не удаляется, все остальные оценки сохраняются,
+                 */
+                else {
+                    for (Rating rating : ratingList) {
+                        if (rating.getLogin().equals(song.getLogin())) {
+                            //я прссто удаляю рейтинг, можно засетить автором рейтинга login : progerCommunity, не понятно условие
+                            ratingList.remove(rating);
+                            return "{}";
+                        }
+                    }
+                }
             }
         }
         throw new Exception("The user can't delete song");
@@ -134,14 +149,19 @@ public class DataBase {
         return count;
     }
 
-    public void deleteRaiting(Rating rating) throws Exception {
+    public void deleteRating(Rating rating) throws Exception {
+        if (isSongCreator(rating)) {
+            throw new Exception("The Creator of the song can't delete the rating");
+        }
+
         for (int i = 0; i < ratingList.size(); i++) {
             Rating r = ratingList.get(i);
             if (r.getLogin().equals(rating.getLogin()) && r.getSongId() == rating.getSongId()) {
                 ratingList.remove(r);
-                break;
+               return;
             }
         }
+        throw new Exception("Rating cannot be deleted");
     }
 
     public void saveData(String savedDataFileName) {
@@ -199,5 +219,14 @@ public class DataBase {
 
     public List<Comment> getCommentList() {
         return commentList;
+    }
+
+    private boolean isSongCreator(Rating rating) {
+        for (Song song : songList) {
+            if (rating.getLogin().equals(song.getLogin()) && rating.getSongId() == song.getSongId()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -4,12 +4,11 @@ import database.DataBase;
 import model.Rating;
 import model.Song;
 import model.User;
-import request.DeleteSongDtoRatingRequest;
+import request.DeleteSongRatingDtoRequest;
 import request.RatingDtoRequest;
 
 public class RaitingService {
     private UserService userService = new UserService();
-    private ObjectMapper mapper = new ObjectMapper();
     private DataBase db = DataBase.getInstance();
     private RatingDaoImpl ratingDao = new RatingDaoImpl();
 
@@ -36,10 +35,7 @@ public class RaitingService {
             throw new Exception("Song not found");
         }
 
-        //todo: проверка если пользователь автор песни, то выбрасывается ошибка, "автор предложения не в праве изменить рейтинг"
-
-
-        ratingDao.updateRating(new Rating(user.getLogin(), song.getSongId(), request.getSongRating()));
+        ratingDao.insert(new Rating(user.getLogin(), song.getSongId(), request.getSongRating()));
         return "{}";
     }
 
@@ -47,19 +43,18 @@ public class RaitingService {
         return raiting > 0 && raiting < 6;
     }
 
-    public String deleteRating(String requestJsonString) throws Exception {
-        DeleteSongDtoRatingRequest deleteRequest = mapper.readValue(requestJsonString, DeleteSongDtoRatingRequest.class);
+    public String deleteRating(DeleteSongRatingDtoRequest request) throws Exception {
+        User user = userService.getUserByToken(request.getToken());
+        if (user == null) {
+            throw new Exception("User not found");
+        }
 
-        User user = userService.getUserByToken(deleteRequest.getToken());
-        Song song = db.findSongById(deleteRequest.getSongId());
+        Song song = db.findSongById(request.getSongId());
         if (song == null) {
-            return "\"error\" : \"Song not found\"";
+            throw new Exception("Song not found");
         }
-        //todo: найти по songId песню
-        if (user != null) {
-            db.deleteRaiting(new Rating(user.getLogin(), deleteRequest.getSongId()));
-            return "{}";
-        }
-        return "\"error\" : \"user not found\"";
+
+        db.deleteRating(new Rating(user.getLogin(), request.getSongId()));
+        return "{}";
     }
 }

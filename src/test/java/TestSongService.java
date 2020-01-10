@@ -1,8 +1,6 @@
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import response.ErrorDtoResponse;
 
 public class TestSongService {
     private Server server;
@@ -31,10 +29,26 @@ public class TestSongService {
 //                " \"token\" : \"FIG\"}";
 //        Assert.assertEquals("{\"error\":\"User not found\"}", songService.addSong(requestJsonString));
 //    }
+
     @Test
     public void test_deleteSong() throws Exception {
-        String requestJsonString = "{\"token\" : \"9f0e256-e429-4eec-a24a-4b2901eb00000\", \"songId\" : 3}";
+        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"songId\" : 3}";
         Assert.assertEquals("\"{}\"", server.deleteSong(requestJsonString));
+    }
+
+    /**
+     * Радиослушатели, сделавшие свое предложение, могут отменить его. Если на момент отмены предложение не получило
+     * никаких оценок от других радиослушателей, оно удаляется. Если же к этому моменту имеются другие оценки этого
+     * предложения, то удаляется лишь оценка этого предложения, сделанная автором предложения (то есть его оценка 5),
+     * а само предложение не удаляется, все остальные оценки сохраняются, а автором предложения считается сообщество
+     * радиослушателей.  Если радиослушатель покидает сервер, считается, что он отменяет все свои предложения
+     * по этому же механизму.
+     */
+    @Test
+    public void test_deleteSong_withSeveralRating() throws Exception {
+        String requestJsonString = "{\"token\" : \"9f0e256-e429-4eec-a24a-4b2901eb00000\", \"songId\" : 1}";//гамут удаляет свою песню
+        Assert.assertEquals("\"{}\"",server.deleteSong(requestJsonString));
+        server.stopServer("saveSongTest.json");
     }
 
     @Test
@@ -48,6 +62,8 @@ public class TestSongService {
         String requestJsonString = "{\"token\" : \"I Snova FIG\", \"songId\" : 1}";
         Assert.assertEquals("{\"error\":\"User not found\"}", server.deleteSong(requestJsonString));
     }
+
+
 
     @Test
     public void test_deleteSong_moreOneRate() throws Exception {

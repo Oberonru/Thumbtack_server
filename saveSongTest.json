@@ -65,12 +65,8 @@
     "songRating" : 3
   }, {
     "login" : "gamut",
-    "songId" : 1,
-    "songRating" : 4
-  }, {
-    "login" : "gamut",
     "songId" : 2,
-    "songRating" : 5
+    "songRating" : 3
   }, {
     "login" : "burumbum",
     "songId" : 3,

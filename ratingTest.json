@@ -26,10 +26,30 @@
     "songDuration" : 0.8,
     "login" : "uaSek",
     "songId" : 1
+  }, {
+    "songName" : "Murka",
+    "composers" : [ "Mur", "Mureh" ],
+    "author" : [ "None", "None" ],
+    "musician" : "Ruhum",
+    "songDuration" : 1.0,
+    "login" : "petrucsho",
+    "songId" : 2
   } ],
   "ratings" : [ {
     "login" : "uaSek",
     "songId" : 1,
+    "songRating" : 5
+  }, {
+    "login" : "gamut",
+    "songId" : 1,
+    "songRating" : 2
+  }, {
+    "login" : "petrucsho",
+    "songId" : 1,
+    "songRating" : 4
+  }, {
+    "login" : "petrucsho",
+    "songId" : 2,
     "songRating" : 5
   } ],
   "comments" : [ ]

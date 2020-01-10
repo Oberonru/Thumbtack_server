@@ -53,28 +53,45 @@ public class TestRatingService {
     }
 
     @Test
-    public void test_deleteRating() throws Exception {
+    public void test_deleteRating_equalsUserRating() throws Exception {
         String requestJsonString = "{\"token\" : \"1f07e256-e429-4eec-a24a-4b2901eb7cf6\", \"songId\" : 1}";
-        Assert.assertEquals("{}", server.deleteRating(requestJsonString));
+        Assert.assertEquals("\"{}\"",server.deleteRating(requestJsonString));
+        server.stopServer("saveRatingTest.json");
+    }
+    @Test
+    public void test_deleteRating_someoneElses() throws Exception {
+        String requestJsonString = "{\"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\", \"songId\" : 2}";//Васёк удаляте петькин рейтинг
+        Assert.assertEquals("{\"error\":\"Rating cannot be deleted\"}", server.deleteRating(requestJsonString));
+    }
+
+    /**
+     * Автор предложения ...... не вправе ни изменить, ни удалить свою оценку.
+     */
+    @Test
+    public void test_deleteRating_its() throws Exception {
+        String requestJsonString = "{\"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\", \"songId\" : 1}";//Васек
+        Assert.assertEquals("{\"error\":\"The Creator of the song can't delete the rating\"}", server.deleteRating(requestJsonString));
+        server.stopServer("saveRatingTest.json");
     }
 
     @Test
     public void test_deleteRaiting_incorrectToken() throws Exception {
         String requestJsonString = "{\"token\" : \"fig2020\", \"songId\" : 1}";
-        Assert.assertEquals("\"error\" : \"user not found\"", server.deleteRating(requestJsonString));
+        Assert.assertEquals("{\"error\":\"User not found\"}", server.deleteRating(requestJsonString));
     }
 
     @Test
     public void test_deleteRating_incorrectSongId() throws Exception {
         String requestJsonString = "{\"token\" : \"1f07e256-e429-4eec-a24a-4b2901eb7cf6\", \"songId\" : -100}";
-        Assert.assertEquals("\"error\" : \"Song not found\"", server.deleteRating(requestJsonString));
+        Assert.assertEquals("{\"error\":\"Song not found\"}", server.deleteRating(requestJsonString));
     }
 
     @Test
     public void test_deleteRating_byLoggedOutUser() throws Exception {
         server.logOut("{\"token\" : \"1f07e256-e429-4eec-a24a-4b2901eb7cf6\"}");
         String requestJsonString = "{\"token\" : \"1f07e256-e429-4eec-a24a-4b2901eb7cf6\", \"songId\" : 1}";
-        System.out.println(server.deleteRating(requestJsonString));
-        Assert.assertEquals("\"error\" : \"user not found\"", server.deleteRating(requestJsonString));
+        Assert.assertEquals("{\"error\":\"User not found\"}", server.deleteRating(requestJsonString));
     }
+
+    //todo: сделать комменты, а затем добавить проверку удаления рейтинга
 }

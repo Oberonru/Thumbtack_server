@@ -12,8 +12,8 @@ public class RatingDaoImpl implements RatingDao {
         db.updateRaiting(rating);
     }
 
-    public void updateRating(Rating rating) throws Exception {
-        db.updateRaiting(rating);
+    public void deleteRating(Rating rating) throws Exception {
+        db.deleteRating(rating);
     }
 
     public List<Rating> getRatingList() {
