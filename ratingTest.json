@@ -1,42 +1,36 @@
 {
-  "users": [
-    {
-      "firstName": "Petro",
-      "lastName": "First",
-      "login": "petrucsho",
-      "password": "3432s3s",
-      "token": "1f07e256-e429-4eec-a24a-4b2901eb7cf6"
-    },
-    {
-      "firstName": "Garik",
-      "lastName": "Mutnii",
-      "login": "gamut",
-      "password": "000",
-      "token": "1f00e256-e429-4eec-a24a-4b2901eb1111"
-    }
-  ],
-  "songs": [
-    {
-      "songName": "Elochka",
-      "composers": [
-        "Zayac",
-        "Volk"
-      ],
-      "author": [
-        "Volk",
-        "Zayac"
-      ],
-      "musician": "Capel'",
-      "songDuration": 5.0,
-      "login": "gamut",
-      "songId": 1
-    }
-  ],
-  "ratings": [
-    {
-      "login": "petrucsho",
-      "songId": 1,
-      "songRating": 3
-    }
-  ]
+  "users" : [ {
+    "firstName" : "Uasya",
+    "lastName" : "Pupkin",
+    "login" : "uaSek",
+    "password" : "123s",
+    "token" : "a6acedd8-213f-4018-b61f-d4b1a0a78418"
+  }, {
+    "firstName" : "Petro",
+    "lastName" : "First",
+    "login" : "petrucsho",
+    "password" : "3432s3s",
+    "token" : "1f07e256-e429-4eec-a24a-4b2901eb7cf6"
+  }, {
+    "firstName" : "Garik",
+    "lastName" : "Mutnii",
+    "login" : "gamut",
+    "password" : "000",
+    "token" : "1f00e256-e429-4eec-a24a-4b2901eb1111"
+  } ],
+  "songs" : [ {
+    "songName" : "Musjaka",
+    "composers" : [ "Muzyak", "MuzyakMladshoi" ],
+    "author" : [ "OnYe" ],
+    "musician" : "MusyagGroup",
+    "songDuration" : 0.8,
+    "login" : "uaSek",
+    "songId" : 1
+  } ],
+  "ratings" : [ {
+    "login" : "uaSek",
+    "songId" : 1,
+    "songRating" : 5
+  } ],
+  "comments" : [ ]
 }

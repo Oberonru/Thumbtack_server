@@ -171,6 +171,7 @@ public class TestServer {
         Assert.assertEquals(db.getSongList().size(), 2);
         Assert.assertEquals("\"{}\"", server.addSong(requestJsonString));
         Assert.assertEquals(db.getSongList().size(), 3);
+        server.stopServer("saveTestServerData.json");
     }
     @Test
     public void test_addSong_twice() throws Exception {

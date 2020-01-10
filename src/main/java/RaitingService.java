@@ -1,16 +1,17 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.RatingDaoImpl;
 import database.DataBase;
 import model.Rating;
 import model.Song;
 import model.User;
 import request.DeleteSongDtoRatingRequest;
 import request.RatingDtoRequest;
-import response.ErrorDtoResponse;
 
 public class RaitingService {
     private UserService userService = new UserService();
     private ObjectMapper mapper = new ObjectMapper();
     private DataBase db = DataBase.getInstance();
+    private RatingDaoImpl ratingDao = new RatingDaoImpl();
 
     /**
      * Радиослушатель, предложивший песню в состав концерта, считается автором этого предложения.
@@ -21,23 +22,24 @@ public class RaitingService {
      * никаких оценок от других радиослушателей, оно удаляется.
      */
 
-    public String addRaiting(String requestJsonString) throws Exception {
-        RatingDtoRequest ratingRequest = mapper.readValue(requestJsonString, RatingDtoRequest.class);
-        if (!verifyRating(ratingRequest.getSongRating())) {
-            ErrorDtoResponse response = new ErrorDtoResponse("Rating not valid");
-            return mapper.writeValueAsString(response);
+    public String addRaiting(RatingDtoRequest request) throws Exception {
+
+        if (!verifyRating(request.getSongRating())) {
+            throw new Exception("Rating not valid");
         }
-        User user = userService.getUserByLogin(ratingRequest.getLogin());
+        User user = userService.getUserByLogin(request.getLogin());
         if (user == null) {
-            ErrorDtoResponse response = new ErrorDtoResponse("User not found");
-            return mapper.writeValueAsString(response);
+            throw new Exception("User not found");
         }
-        Song song = db.findSongById(ratingRequest.getSongId());
+        Song song = db.findSongById(request.getSongId());
         if (song == null) {
-            ErrorDtoResponse response = new ErrorDtoResponse("Song not found");
-            return mapper.writeValueAsString(response);
+            throw new Exception("Song not found");
         }
-        db.updateRaiting(new Rating(user.getLogin(), song.getSongId(), ratingRequest.getSongRating()));
+
+        //todo: проверка если пользователь автор песни, то выбрасывается ошибка, "автор предложения не в праве изменить рейтинг"
+
+
+        ratingDao.updateRating(new Rating(user.getLogin(), song.getSongId(), request.getSongRating()));
         return "{}";
     }
 

@@ -122,13 +122,28 @@ public class Server {
         try {
             String response = songService.deleteSong(request);
             return mapper.writeValueAsString(response);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
         }
     }
 
     public String addRating(String requestJsonString) throws Exception {
-        return raitingService.addRaiting(requestJsonString);
+        RatingDtoRequest request;
+
+        try {
+            request = mapper.readValue(requestJsonString, RatingDtoRequest.class);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+
+        try {
+            String response = raitingService.addRaiting(request);
+            return mapper.writeValueAsString(response);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+
+
     }
 
     public String deleteRating(String requestJsonString) throws Exception {

@@ -63,13 +63,13 @@ public class DataBase {
         throw new Exception("The user can't delete song");
     }
 
-    public void updateRaiting(Rating rating) {
+    public void updateRaiting(Rating rating) throws Exception {
         boolean isExsist = false;
         for (Rating r : ratingList) {
             if (r.getLogin().equals(rating.getLogin()) && r.getSongId() == rating.getSongId()) {
                 boolean isAutor = rating.getLogin().equals(findSongById(rating.getSongId()).getLogin());
                 if (isAutor) {
-                    return;
+                    throw new Exception("the author of the song can't change the rating");
                 }
                 r.setSongRating(rating.getSongRating());
                 isExsist = true;
