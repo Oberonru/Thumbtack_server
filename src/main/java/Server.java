@@ -149,20 +149,33 @@ public class Server {
 
         try {
             request = mapper.readValue(requestJsonString, DeleteSongRatingDtoRequest.class);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
         }
 
         try {
             String response = raitingService.deleteRating(request);
             return mapper.writeValueAsString(response);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
         }
     }
 
     public String addComment(String requestJsonString) throws Exception {
-        return commentService.addComment(requestJsonString);
+        CommentDtoRequest request;
+
+        try {
+            request = mapper.readValue(requestJsonString, CommentDtoRequest.class);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+        try {
+
+            String response = commentService.addComment(request);
+            return mapper.writeValueAsString(response);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
     }
 
     public String getSongs(String requestJsonString) throws Exception {

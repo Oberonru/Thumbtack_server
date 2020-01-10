@@ -14,20 +14,19 @@ public class CommentService {
     private CommentDaoImpl commentDao = new CommentDaoImpl();
     private UserService userService = new UserService();
 
-    public String addComment(String requestJsonString) throws Exception {
-        CommentDtoRequest commentRequest = mapper.readValue(requestJsonString, CommentDtoRequest.class);
-        if (tooLongContent(commentRequest.getContent())) {
-            ErrorDtoResponse response = new ErrorDtoResponse("content is too Long");
-            return mapper.writeValueAsString(response);
+    public String addComment(CommentDtoRequest request) throws Exception {
+        if (tooLongContent(request.getContent())) {
+            throw new Exception("content is too Long");
         }
-        Comment comment = createComment(commentRequest.getToken(), commentRequest.getContent(),
-                commentRequest.getSongId(), commentRequest.getReplyCommentId());
-        ErrorDtoResponse response = new ErrorDtoResponse("Comment is not added");
-        if (comment != null) {
-            commentDao.insert(comment);
-            return "{}";
+
+        Comment comment = createComment(request.getToken(), request.getContent(),
+                request.getSongId(), request.getReplyCommentId());
+        if (comment == null) {
+            throw new Exception("Comment is not added");
         }
-        else return mapper.writeValueAsString(response);
+
+        commentDao.insert(comment);
+        return "{}";
     }
 
     private Comment createComment(String token, String content, int songId, int replyCommentId) {
@@ -48,9 +47,9 @@ public class CommentService {
     private int generateCommentId() {
         if (db.getCommentList().size() != 0) {
             return commentDao.getCommentList().get(commentDao.getCommentList().size() - 1).getId() + 1;
-        }
-        else return 1;
+        } else return 1;
     }
+
     private boolean tooLongContent(String content) {
         return content.length() > 30;
     }

@@ -15,7 +15,7 @@ public class TestCommentService {
     public void test_addComment() throws Exception {
         String requestLoginJsonString = "{\"token\" : \"1f07e256-e429-4eec-a24a-4b2901eb7cf6\"," +
                 " \"content\" : \"Фуфло, а не песня\", \"songId\" : 3}";
-        Assert.assertEquals("{}", server.addComment(requestLoginJsonString));
+        Assert.assertEquals("\"{}\"", server.addComment(requestLoginJsonString));
     }
 
     @Test
@@ -42,8 +42,8 @@ public class TestCommentService {
     @Test
     public void test_addComment_addReplyComment() throws Exception {
         String requestLoginJsonString = "{\"token\" : \"9f0e256-e429-4eec-a24a-4b2901eb00000\"," +
-                " \"content\" : \"Да фуфлище полное!!!\", \"songId\" : 3, \"replyCommentId\" : 2}";
-        System.out.println(server.addComment(requestLoginJsonString));
+                " \"content\" : \"Да фуфлище полное!!!\", \"songId\" : 3, \"replyCommentId\" : 1}";
+        Assert.assertEquals("\"{}\"", server.addComment(requestLoginJsonString));
         server.stopServer("saveCommentTest.json");
     }
 

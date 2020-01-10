@@ -112,6 +112,7 @@ public class DataBase {
      */
     public void addComment(Comment comment) {
         List<Comment> currentComments = getCommentsBySongId(comment.getSongId());
+
         if (currentComments.size() != 0 && currentComments.get(commentList.size() - 1).getLogin().equals(comment.getLogin())) {
             currentComments.set(currentComments.size() - 1, comment);
             commentList.add(currentComments.get(currentComments.size() - 1));
