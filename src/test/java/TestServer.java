@@ -1,3 +1,6 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.RatingDaoImpl;
+import dao.SongDaoImpl;
 import dao.UserDaoImpl;
 import database.DataBase;
 import org.junit.Assert;
@@ -15,14 +18,27 @@ public class TestServer {
 
     @Test
     public void test_startServer() throws Exception {
-        DataBase db = DataBase.getInstance();
+        UserDaoImpl userDao = new UserDaoImpl();
+        SongDaoImpl songDao = new SongDaoImpl();
+        RatingDaoImpl ratingDao = new RatingDaoImpl();
         server.startServer("testServerData.json");
-        Assert.assertEquals(db.getUserList().size(), 1);
-        Assert.assertEquals(db.getSongList().size(), 2);
-        Assert.assertEquals(db.getUserList().get(0).getFirstName(), "Uasya");
-        Assert.assertEquals(db.getSongList().get(1).getSongName(), "second");
-        Assert.assertEquals(db.getRatingList().get(0).getLogin(), "uaSek");
-        Assert.assertEquals(db.getRatingList().get(0).getSongId(), 2);
+        Assert.assertEquals(userDao.getUserList().size(), 1);
+        Assert.assertEquals(songDao.getSongList().size(), 2);
+        Assert.assertEquals(userDao.getUserList().get(0).getFirstName(), "Uasya");
+        Assert.assertEquals(songDao.getSongList().get(1).getSongName(), "second");
+        Assert.assertEquals(ratingDao.getRatingList().get(0).getLogin(), "uaSek");
+        Assert.assertEquals(ratingDao.getRatingList().get(0).getSongId(), 2);
+    }
+    @Test
+    public void test_startServer_fileNull() throws Exception {
+        server.startServer(null);
+        server.stopServer("saveTestServerData.json");
+    }
+
+    @Test
+    public void test_startServer_fileEmpty() throws Exception {
+        server.startServer("emptyFile.json");
+        server.stopServer("saveTestServerData.json");
     }
 
     @Test
@@ -41,9 +57,10 @@ public class TestServer {
         server.startServer("testServerData.json");
         String registerUserJson = "{\"firstName\":\"Petro\",\"lastName\":\"First\",\"login\":\"petrucsho\"," +
                 "\"password\":\"3432s3s\"}";
-        server.registerUser(registerUserJson);
-        Assert.assertEquals(userDao.getUserList().size(), 3);
+        System.out.println(server.registerUser(registerUserJson));
+        Assert.assertEquals(userDao.getUserList().size(), 2);
         Assert.assertEquals("Petro", userDao.getUserList().get(1).getFirstName());
+        server.stopServer("saveTestServerData.json");
     }
 
     @Test
@@ -87,19 +104,29 @@ public class TestServer {
         Assert.assertEquals("{\"error\":\"User not found\"}", server.logIn(requestJsonString));
     }
 
+    //todo: надо править
     @Test
     public void test_logIn_dataNotValid() throws Exception {
         server.startServer("testServerData.json");
         String requestJsonString = "{\"firstName\":\"Boryaha\",\"lastName\":\"Morkovkin\",\"log\":\"gamer\"," +
                 "\"password\":\"321\"}";
-        System.out.println(server.logIn(requestJsonString));
+        try {
+            server.logIn(requestJsonString);
+        }catch (Exception e) {
+            Assert.assertEquals("{\"error\":\"Unrecognized field \\\"firstName\\\" " +
+                    "(class request.LogInDtoRequest), not marked as ignorable (2 known properties: " +
+                    "\\\"login\\\", \\\"password\\\"])\\n at [Source: (String)\\\"{\\\"firstName\\\":\\\"Boryaha\\\"," +
+                    "\\\"lastName\\\":\\\"Morkovkin\\\",\\\"log\\\":\\\"gamer\\\",\\\"password\\\":\\\"321\\\"}\\\"; " +
+                    "line: 1, column: 15] (through reference chain: request.LogInDtoRequest[\\\"firstName\\\"])\"}",
+                    e.getMessage());
+        }
     }
 
     @Test
     public void test_logOut() throws Exception {
         server.startServer("testServerData.json");
         String requestJsonString = "{\"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
-        Assert.assertEquals("{}", server.logOut(requestJsonString));
+        Assert.assertEquals("\"{}\"", server.logOut(requestJsonString));
         server.stopServer("saveTestServerData.json");
     }
     @Test
@@ -110,13 +137,19 @@ public class TestServer {
         Assert.assertEquals("{\"error\":\"User not found\"}", server.logOut(requestJsonString));
     }
 
+
+    //todo: надо править
     @Test
     public void test_logOut_dataNotValid() throws Exception {
         server.startServer("testServerData.json");
         String requestJsonString = "{\"songName\" : \"Musjaka\", \"composer\" : [\"Muzyak\", \"MuzyakMladshoi\"]," +
                 " \"author\" : [\"OnYe\"], \"musician\" : \"MusyagGroup\",  \"songDuration\" : 0.8," +
                 " \"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
-        System.out.println(server.logOut(requestJsonString));
+        try {
+            server.logOut(requestJsonString);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -136,8 +169,19 @@ public class TestServer {
                 " \"author\" : [\"OnYe\"], \"musician\" : \"MusyagGroup\",  \"songDuration\" : 0.8," +
                 " \"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
         Assert.assertEquals(db.getSongList().size(), 2);
-        Assert.assertEquals("{}", server.addSong(requestJsonString));
+        Assert.assertEquals("\"{}\"", server.addSong(requestJsonString));
         Assert.assertEquals(db.getSongList().size(), 3);
+    }
+    @Test
+    public void test_addSong_twice() throws Exception {
+        server.startServer("testServerData.json");
+        String requestLoginJsonString = "{\"login\" : \"uaSek\", \"password\" : \"123s\" }";
+        server.logIn(requestLoginJsonString);
+        String requestJsonString = "{\"songName\" : \"MUSJaka\", \"composer\" : [\"Muzyak\", \"MuzyakMladshoi\"]," +
+                " \"author\" : [\"OnYe\"], \"musician\" : \"MusyagGroup\",  \"songDuration\" : 0.8," +
+                " \"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
+        Assert.assertEquals("\"{}\"", server.addSong(requestJsonString));
+        Assert.assertEquals("{\"error\":\"Such a song already exsists\"}", server.addSong(requestJsonString));
     }
 
     @Test
@@ -154,24 +198,24 @@ public class TestServer {
         server.startServer("testServerData.json");
         String requestJsonString = "{\"songName\" : \"TucMuc\", \"composer\" : [\"Obdolbish\", \"Ukurish\"]," +
                 " \"author\" : [\"Bomj\", \"Bezdar'\"], \"musician\" : \"Saruhanov\",  \"songDuration\" : 3.8," +
-                " \"token\" : \"768757568-213f-4018-b61f-d4b1a0a78400\"}";
+                " \"token\" : \"Fatal_ERROR\"}";
         Assert.assertEquals("{\"error\":\"User not found\"}", server.addSong(requestJsonString));
     }
 
     @Test
     public void test_addSong_logOut() throws Exception {
-        DataBase db = DataBase.getInstance();
+        SongDaoImpl songDao = new SongDaoImpl();
         server.startServer("testServerData.json");
         String requestLoginJsonString = "{\"login\" : \"uaSek\", \"password\" : \"123s\" }";
         server.logIn(requestLoginJsonString);
         String requestJsonString = "{\"songName\" : \"Musjaka\", \"composer\" : [\"Muzyak\", \"MuzyakMladshoi\"]," +
                 " \"author\" : [\"OnYe\"], \"musician\" : \"MusyagGroup\",  \"songDuration\" : 0.8," +
                 " \"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
-        Assert.assertEquals(db.getSongList().size(), 2);
+        Assert.assertEquals(songDao.getSongList().size(), 2);
         server.addSong(requestJsonString);
-        Assert.assertEquals(db.getSongList().size(), 3);
+        Assert.assertEquals(songDao.getSongList().size(), 3);
         String logOutJsonString = "{\"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
-        Assert.assertEquals(server.logOut(logOutJsonString), "{}");
+        Assert.assertEquals("\"{}\"", server.logOut(logOutJsonString));
         String requestJsonString2 = "{\"songName\" : \"Musjaka\", \"composer\" : [\"Muzyak\", \"MuzyakMladshoi\"]," +
                 " \"author\" : [\"OnYe\"], \"musician\" : \"MusyagGroup\",  \"songDuration\" : 0.8," +
                 " \"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";

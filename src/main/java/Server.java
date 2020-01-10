@@ -1,9 +1,8 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import database.DataBase;
-import request.LogInDtoRequest;
-import request.LogOutDtoRequest;
-import request.RegisterUserDtoRequest;
+import request.*;
 import response.ErrorDtoResponse;
+import response.RegisterUserDtoResponse;
 
 public class Server {
 
@@ -46,8 +45,10 @@ public class Server {
             }
 
             try {
+                RegisterUserDtoResponse response = new RegisterUserDtoResponse();
                 String token = userService.registerUser(request);
-                return mapper.writeValueAsString(token);
+                response.setToken(token);
+                return mapper.writeValueAsString(response);
             } catch (Exception e) {
                 return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
             }
@@ -92,11 +93,38 @@ public class Server {
     }
 
     public String addSong(String requestJsonString) throws Exception {
-        return songService.addSong(requestJsonString);
+        RegisterSongDtoRequest request;
+
+        try {
+            request = mapper.readValue(requestJsonString, RegisterSongDtoRequest.class);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+
+        try {
+            String response = songService.addSong(request);
+            return mapper.writeValueAsString(response);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+
     }
 
     public String deleteSong(String requestJsonString) throws Exception {
-        return songService.deleteSong(requestJsonString);
+        DeleteSongDtoRequest request;
+
+        try {
+            request = mapper.readValue(requestJsonString, DeleteSongDtoRequest.class);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+
+        try {
+            String response = songService.deleteSong(request);
+            return mapper.writeValueAsString(response);
+        }catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
     }
 
     public String addRating(String requestJsonString) throws Exception {

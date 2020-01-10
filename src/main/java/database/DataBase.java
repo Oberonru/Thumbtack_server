@@ -50,7 +50,7 @@ public class DataBase {
         songList.add(song);
     }
 
-    public String deleteSong(Song song) throws JsonProcessingException {
+    public String deleteSong(Song song) throws Exception {
         List<Comment> songComments = getCommentsBySongId(song.getSongId());
         for (User user : userList) {
             if (user.getLogin().equals(song.getLogin())) {
@@ -60,8 +60,7 @@ public class DataBase {
                 }
             }
         }
-        ErrorDtoResponse response = new ErrorDtoResponse("The user can't delete song");
-        return mapper.writeValueAsString(response);
+        throw new Exception("The user can't delete song");
     }
 
     public void updateRaiting(Rating rating) {
@@ -161,7 +160,7 @@ public class DataBase {
 
     public void loadDataToCache(String savedDataFileName) {
         if (savedDataFileName == null || new File(savedDataFileName).length() == 0) {
-            System.out.println("Список пользователей пуст, сервер стартует с нуля");
+//            System.out.println("Список пользователей пуст, сервер стартует с нуля");
             return;
         }
         try {
