@@ -209,7 +209,7 @@ public class Server {
         }
     }
 
-    public String getSongByAutors(String requestJsonString) throws Exception {
+    public String getSongByAuthors(String requestJsonString) throws Exception {
         FindSongByAutorDtoRequest request;
 
         try {
@@ -225,4 +225,21 @@ public class Server {
             return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
         }
     }
+
+    public String getSongByMusician(String requestJsonString) throws Exception {
+        FindSongByMisicianDtoRequest request ;
+        try {
+            request = mapper.readValue(requestJsonString, FindSongByMisicianDtoRequest.class);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+
+        try {
+            String response = songService.findSongByMusician(request);
+            return mapper.writeValueAsString(response);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+    }
+
 }

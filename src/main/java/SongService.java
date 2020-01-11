@@ -10,6 +10,7 @@ import model.User;
 import request.*;
 import response.FindSongByAutorDtoResponse;
 import response.FindSongByComposersDtoResponse;
+import response.FindSongsListDtoResponse;
 import response.GetSongsDtoResponse;
 
 import java.util.ArrayList;
@@ -156,6 +157,30 @@ public class SongService {
         }
 
         FindSongByAutorDtoResponse response = new FindSongByAutorDtoResponse();
+        response.getSongList().addAll(songs);
+        return mapper.writeValueAsString(response);
+    }
+
+    public String findSongByMusician(FindSongByMisicianDtoRequest request) throws Exception {
+        List<Song> songs = new ArrayList<Song>();
+
+        User user = userService.getUserByToken(request.getToken());
+
+        if (user == null) {
+            throw new Exception("User not found");
+        }
+
+        for (Song song : songDao.getSongList()) {
+            if (song.getMusician().equalsIgnoreCase(request.getMusician())) {
+                songs.add(song);
+            }
+        }
+
+        if (songs.size() == 0) {
+            throw new Exception("Authors is not found");
+        }
+
+        FindSongsListDtoResponse response = new FindSongsListDtoResponse();
         response.getSongList().addAll(songs);
         return mapper.writeValueAsString(response);
     }

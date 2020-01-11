@@ -98,18 +98,31 @@ public class TestSongService {
     @Test
     public void test_getSongByAutors() throws Exception {
         String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"author\" : [\"RumuMburum\"]}";
-        System.out.println(server.getSongByAutors(requestJsonString));
+        System.out.println(server.getSongByAuthors(requestJsonString));
     }
 
     @Test
     public void test_getSongByAutors_notExsist() throws Exception {
         String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"author\" : [\"NO\"]}";
-        Assert.assertEquals("{\"error\":\"Authors is not found\"}", server.getSongByAutors(requestJsonString));
+        Assert.assertEquals("{\"error\":\"Authors is not found\"}", server.getSongByAuthors(requestJsonString));
     }
+
     @Test
     public void test_getSongByAutors_tokenNotValid() throws Exception {
         String requestJsonString = "{\"token\" : \"NONE\", \"author\" : [\"RumuMburum\"]}";
-       Assert.assertEquals("{\"error\":\"User not found\"}", server.getSongByAutors(requestJsonString));
+        Assert.assertEquals("{\"error\":\"User not found\"}", server.getSongByAuthors(requestJsonString));
+    }
+
+    @Test
+    public void test_getSongByMusician() throws Exception {
+        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"musician\" : \"capel'\"}";
+        System.out.println(server.getSongByMusician(requestJsonString));
+    }
+
+    @Test
+    public void test_getSongByMusician_tokenNotValid() throws Exception {
+        String requestJsonString = "{\"token\" : \"NOT Valid\", \"musician\" : \"Capel'\"}";
+        Assert.assertEquals("{\"error\":\"User not found\"}", server.getSongByMusician(requestJsonString));
     }
 
 
