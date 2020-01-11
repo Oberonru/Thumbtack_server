@@ -1,0 +1,88 @@
+{
+  "users" : [ {
+    "firstName" : "Petro",
+    "lastName" : "First",
+    "login" : "petrucsho",
+    "password" : "3432s3s",
+    "token" : "1f07e256-e429-4eec-a24a-4b2901eb7cf6"
+  }, {
+    "firstName" : "Garik",
+    "lastName" : "Mutnii",
+    "login" : "gamut",
+    "password" : "000",
+    "token" : "1f00e256-e429-4eec-a24a-4b2901eb1111"
+  }, {
+    "firstName" : "Murum",
+    "lastName" : "Hurum",
+    "login" : "burumbum",
+    "password" : "1111",
+    "token" : "9f0e256-e429-4eec-a24a-4b2901eb00000"
+  } ],
+
+
+  "songs" : [ {
+    "songName" : "Elochka",
+    "composers" : [ "Zayac", "Volk" ],
+    "author" : [ "Volk", "Zayac" ],
+    "musician" : "Capel'",
+    "songDuration" : 5.0,
+    "login" : "gamut",
+    "songId" : 1
+  }, {
+    "songName" : "second",
+    "composers" : [ "BBBB", "AAAA" ],
+    "author" : [ "CCC", "DDD" ],
+    "musician" : "Songer",
+    "songDuration" : 1.0,
+    "login" : "tolyan",
+    "songId" : 2
+  }, {
+    "songName" : "RamambaharaMamburum",
+    "composers" : [ "Murum", "Burum" ],
+    "author" : [ "RumuMburum" ],
+    "musician" : "Hamamburamburum",
+    "songDuration" : 10.0,
+    "login" : "burumbum",
+    "songId" : 3
+  } ],
+
+
+  "ratings" : [ {
+    "login" : "petrucsho",
+    "songId" : 1,
+    "songRating" : 3
+  }, {
+    "login" : "gamut",
+    "songId" : 1,
+    "songRating" : 5
+  }, {
+    "login" : "gamut",
+    "songId" : 2,
+    "songRating" : 5
+  }, {
+    "login" : "burumbum",
+    "songId" : 3,
+    "songRating" : 5
+  } ],
+
+
+  "comments" : [ {
+    "id" : 1,
+    "login" : "petrucsho",
+    "content" : "Фуфло, а не песня",
+    "songId" : 3,
+    "replyCommentId" : 0
+  }, {
+    "id" : 2,
+    "login" : "gamut",
+    "content" : "чего гонишь? норм песня!",
+    "songId" : 3,
+    "replyCommentId" : 1
+  }, {
+    "id" : 3,
+    "login" : "burumbum",
+    "content" : "Да фуфлище полное!!!",
+    "songId" : 3,
+    "replyCommentId" : 1
+  } ]
+}

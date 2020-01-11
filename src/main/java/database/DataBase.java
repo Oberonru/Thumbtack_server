@@ -34,7 +34,6 @@ public class DataBase {
         userList.add(user);
     }
 
-    //todo: при обновлении пользователя проверка только на логин, пароль нужно?
     public void updateUser(User user) {
         for (User u : userList) {
             if (u.getLogin().equals(user.getLogin())) {

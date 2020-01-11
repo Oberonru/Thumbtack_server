@@ -1,4 +1,3 @@
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.RatingDaoImpl;
 import dao.SongDaoImpl;
 import dao.UserDaoImpl;
@@ -29,6 +28,7 @@ public class TestServer {
         Assert.assertEquals(ratingDao.getRatingList().get(0).getLogin(), "uaSek");
         Assert.assertEquals(ratingDao.getRatingList().get(0).getSongId(), 2);
     }
+
     @Test
     public void test_startServer_fileNull() throws Exception {
         server.startServer(null);
@@ -104,22 +104,12 @@ public class TestServer {
         Assert.assertEquals("{\"error\":\"User not found\"}", server.logIn(requestJsonString));
     }
 
-    //todo: надо править
     @Test
     public void test_logIn_dataNotValid() throws Exception {
         server.startServer("testServerData.json");
         String requestJsonString = "{\"firstName\":\"Boryaha\",\"lastName\":\"Morkovkin\",\"log\":\"gamer\"," +
                 "\"password\":\"321\"}";
-        try {
-            server.logIn(requestJsonString);
-        }catch (Exception e) {
-            Assert.assertEquals("{\"error\":\"Unrecognized field \\\"firstName\\\" " +
-                    "(class request.LogInDtoRequest), not marked as ignorable (2 known properties: " +
-                    "\\\"login\\\", \\\"password\\\"])\\n at [Source: (String)\\\"{\\\"firstName\\\":\\\"Boryaha\\\"," +
-                    "\\\"lastName\\\":\\\"Morkovkin\\\",\\\"log\\\":\\\"gamer\\\",\\\"password\\\":\\\"321\\\"}\\\"; " +
-                    "line: 1, column: 15] (through reference chain: request.LogInDtoRequest[\\\"firstName\\\"])\"}",
-                    e.getMessage());
-        }
+        Assert.assertEquals("{\"error\":\"Data is not valid\"}", server.logIn(requestJsonString));
     }
 
     @Test
@@ -129,6 +119,7 @@ public class TestServer {
         Assert.assertEquals("\"{}\"", server.logOut(requestJsonString));
         server.stopServer("saveTestServerData.json");
     }
+
     @Test
     public void test_logOut_twice() throws Exception {
         server.startServer("testServerData.json");
@@ -137,19 +128,13 @@ public class TestServer {
         Assert.assertEquals("{\"error\":\"User not found\"}", server.logOut(requestJsonString));
     }
 
-
-    //todo: надо править
     @Test
     public void test_logOut_dataNotValid() throws Exception {
         server.startServer("testServerData.json");
         String requestJsonString = "{\"songName\" : \"Musjaka\", \"composer\" : [\"Muzyak\", \"MuzyakMladshoi\"]," +
                 " \"author\" : [\"OnYe\"], \"musician\" : \"MusyagGroup\",  \"songDuration\" : 0.8," +
                 " \"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
-        try {
-            server.logOut(requestJsonString);
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
+        Assert.assertEquals("{\"error\":\"Data is not valid\"}", server.logOut(requestJsonString));
     }
 
     @Test
@@ -173,6 +158,7 @@ public class TestServer {
         Assert.assertEquals(db.getSongList().size(), 3);
         server.stopServer("saveTestServerData.json");
     }
+
     @Test
     public void test_addSong_twice() throws Exception {
         server.startServer("testServerData.json");
@@ -221,5 +207,12 @@ public class TestServer {
                 " \"author\" : [\"OnYe\"], \"musician\" : \"MusyagGroup\",  \"songDuration\" : 0.8," +
                 " \"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
         Assert.assertEquals("{\"error\":\"User not found\"}", server.addSong(requestJsonString2));
+    }
+
+    @Test
+    public void test_addSong_dataNotValid() throws Exception {
+        server.startServer("testServerData.json");
+        String registerUserJson = "{\"firstName\":\"Petro\",\"lastName\":\"First\",\"login\":\"petrucsho\"}";
+        Assert.assertEquals("{\"error\":\"Data is not valid\"}", server.addSong(registerUserJson));
     }
 }

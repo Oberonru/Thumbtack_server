@@ -3,6 +3,9 @@ import database.DataBase;
 import request.*;
 import response.ErrorDtoResponse;
 import response.RegisterUserDtoResponse;
+import response.SongForConcertModel;
+
+import java.util.List;
 
 public class Server {
 
@@ -10,6 +13,7 @@ public class Server {
     private SongService songService = new SongService();
     private RaitingService raitingService = new RaitingService();
     private CommentService commentService = new CommentService();
+    private ConcertProgrammService concertProgramm = new ConcertProgrammService();
     private DataBase db = DataBase.getInstance();
     private boolean isStarted;
     private ObjectMapper mapper = new ObjectMapper();
@@ -63,13 +67,11 @@ public class Server {
         try {
             request = mapper.readValue(requestJsonString, LogInDtoRequest.class);
         } catch (Exception e) {
-            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+            return mapper.writeValueAsString(new ErrorDtoResponse("Data is not valid"));
         }
 
         try {
-            //todo: по идее здесь всегда валидное значение, как проверить блок catch, как в него передать невалидный токен?
-            String token = userService.logIn(request);
-            return mapper.writeValueAsString(token);
+            return mapper.writeValueAsString(userService.logIn(request));
         } catch (Exception e) {
             return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
         }
@@ -81,7 +83,7 @@ public class Server {
         try {
             request = mapper.readValue(requestJsonString, LogOutDtoRequest.class);
         } catch (Exception e) {
-            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+            return mapper.writeValueAsString(new ErrorDtoResponse("Data is not valid"));
         }
 
         try {
@@ -98,7 +100,7 @@ public class Server {
         try {
             request = mapper.readValue(requestJsonString, RegisterSongDtoRequest.class);
         } catch (Exception e) {
-            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+            return mapper.writeValueAsString(new ErrorDtoResponse("Data is not valid"));
         }
 
         try {
@@ -116,7 +118,7 @@ public class Server {
         try {
             request = mapper.readValue(requestJsonString, DeleteSongDtoRequest.class);
         } catch (Exception e) {
-            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+            return mapper.writeValueAsString(new ErrorDtoResponse("Data is not valid"));
         }
 
         try {
@@ -133,7 +135,7 @@ public class Server {
         try {
             request = mapper.readValue(requestJsonString, RatingDtoRequest.class);
         } catch (Exception e) {
-            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+            return mapper.writeValueAsString(new ErrorDtoResponse("Data is not valid"));
         }
 
         try {
@@ -150,7 +152,7 @@ public class Server {
         try {
             request = mapper.readValue(requestJsonString, DeleteSongRatingDtoRequest.class);
         } catch (Exception e) {
-            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+            return mapper.writeValueAsString(new ErrorDtoResponse("Data is not valid"));
         }
 
         try {
@@ -167,7 +169,7 @@ public class Server {
         try {
             request = mapper.readValue(requestJsonString, CommentDtoRequest.class);
         } catch (Exception e) {
-            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+            return mapper.writeValueAsString(new ErrorDtoResponse("Data is not valid"));
         }
         try {
 
@@ -183,7 +185,7 @@ public class Server {
         try {
             request = mapper.readValue(requestJsonString, GetSongsDtoRequest.class);
         } catch (Exception e) {
-            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+            return mapper.writeValueAsString(new ErrorDtoResponse("Data is not valid"));
         }
 
         try {
@@ -199,7 +201,7 @@ public class Server {
         try {
             request = mapper.readValue(requestJsonString, FindSongByComposersDtoRequest.class);
         } catch (Exception e) {
-            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+            return mapper.writeValueAsString(new ErrorDtoResponse("Data is not valid"));
         }
         try {
             String response = songService.findSongByComposer(request);
@@ -215,7 +217,7 @@ public class Server {
         try {
             request = mapper.readValue(requestJsonString, FindSongByAutorDtoRequest.class);
         } catch (Exception e) {
-            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+            return mapper.writeValueAsString(new ErrorDtoResponse("Data is not valid"));
         }
 
         try {
@@ -227,11 +229,11 @@ public class Server {
     }
 
     public String getSongByMusician(String requestJsonString) throws Exception {
-        FindSongByMisicianDtoRequest request ;
+        FindSongByMisicianDtoRequest request;
         try {
             request = mapper.readValue(requestJsonString, FindSongByMisicianDtoRequest.class);
         } catch (Exception e) {
-            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+            return mapper.writeValueAsString(new ErrorDtoResponse("Data is not valid"));
         }
 
         try {
@@ -242,4 +244,20 @@ public class Server {
         }
     }
 
+    public String getConcertProgram(String requestJsonString) throws Exception {
+        ConcertProgramDtoRequest request;
+
+        try {
+            request = mapper.readValue(requestJsonString, ConcertProgramDtoRequest.class);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse("Data is not valid"));
+        }
+
+        try {
+            List<SongForConcertModel> modelList = concertProgramm.getConcertProgram(request);
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(modelList);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+    }
 }
