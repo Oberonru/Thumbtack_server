@@ -1,10 +1,10 @@
 package request;
 
-public class FindByComposersDtoRequest {
+public class FindSongByComposersDtoRequest {
     private String token;
     private String[] composers;
 
-    public FindByComposersDtoRequest() {}
+    public FindSongByComposersDtoRequest() {}
 
     public String getToken() {
         return token;

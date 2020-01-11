@@ -9,5 +9,7 @@ public interface RatingDao {
 
     void deleteRating(Rating rating) throws Exception;
 
-    List<Rating> getRatingList();
+    int getRatingsCount(int songId);
+
+        List<Rating> getRatingList();
 }

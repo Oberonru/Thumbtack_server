@@ -1,16 +1,15 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.CommentDaoImpl;
 import dao.RatingDaoImpl;
 import dao.SongDaoImpl;
 import database.DataBase;
+import model.Comment;
 import model.Rating;
 import model.Song;
 import model.User;
-import request.DeleteSongDtoRequest;
-import request.FindByComposersDtoRequest;
-import request.GetSongsDtoRequest;
-import request.RegisterSongDtoRequest;
-import response.ErrorDtoResponse;
-import response.FindByComposersDtoResponse;
+import request.*;
+import response.FindSongByAutorDtoResponse;
+import response.FindSongByComposersDtoResponse;
 import response.GetSongsDtoResponse;
 
 import java.util.ArrayList;
@@ -21,10 +20,9 @@ public class SongService {
 
     private SongDaoImpl songDao = new SongDaoImpl();
     private RatingDaoImpl ratingDao = new RatingDaoImpl();
+    private CommentDaoImpl commentDao = new CommentDaoImpl();
     private ObjectMapper mapper = new ObjectMapper();
     private UserService userService = new UserService();
-    private DataBase db = DataBase.getInstance();
-
 
     public SongService() {
     }
@@ -54,7 +52,7 @@ public class SongService {
             throw new Exception("User not found");
         }
 
-        if (findtSongBySongName(request.getSongName())) {
+        if (findSongBySongName(request.getSongName())) {
             throw new Exception("Such a song already exsists");
         }
 
@@ -70,20 +68,38 @@ public class SongService {
     /**
      * Радиослушатели, сделавшие свое предложение, могут отменить его. Если на момент отмены предложение не получило
      * * никаких оценок от других радиослушателей, оно удаляется.
-     *
-     * @return
      */
     public String deleteSong(DeleteSongDtoRequest request) throws Exception {
-
-        Song song = db.findSongById(request.getSongId());
+        Song song = songDao.findSongById(request.getSongId());
         User user = userService.getUserByToken(request.getToken());
+
         if (user == null) {
             throw new Exception("User not found");
         }
         if (song == null) {
             throw new Exception("Song not found");
         }
-        return songDao.deleteSong(song);
+
+        List<Comment> songComments = commentDao.getCommentsBySongId(song.getSongId());
+
+            if (user.getLogin().equals(song.getLogin())) {
+                if (ratingDao.getRatingsCount(song.getSongId()) == 1 && songComments.size() == 0) {
+                    songDao.getSongList().remove(song);
+                    return "{}";
+                }
+
+                else {
+                    for (Rating rating : ratingDao.getRatingList()) {
+                        if (rating.getLogin().equals(song.getLogin())) {
+                            //я прссто удаляю рейтинг, можно засетить автором рейтинга login : progerCommunity, не понятно условие
+                            ratingDao.getRatingList().remove(rating);
+                            throw new Exception("Song rating is deleted, the user can't delete song");
+                        }
+                    }
+                }
+            }
+
+        throw new Exception("The user can't delete song");
     }
 
     public String getSongs(GetSongsDtoRequest request) throws Exception {
@@ -98,29 +114,53 @@ public class SongService {
         return mapper.writeValueAsString(getSongsDtoResponse);
     }
 
-    public String findSongByComposer(String requestJsonString) throws Exception {
+    public String findSongByComposer(FindSongByComposersDtoRequest request) throws Exception {
         List<Song> songs = new ArrayList<Song>();
-        FindByComposersDtoRequest request = mapper.readValue(requestJsonString, FindByComposersDtoRequest.class);
+
         User user = userService.getUserByToken(request.getToken());
         if (user == null) {
-            return mapper.writeValueAsString(new ErrorDtoResponse("User not found"));
+            throw new Exception("User not found");
         }
+
         for (Song song : songDao.getSongList()) {
             if (Arrays.asList(song.getComposers()).containsAll(Arrays.asList(request.getComposers()))) {
                 songs.add(song);
             }
         }
 
-        FindByComposersDtoResponse response = new FindByComposersDtoResponse();
-        response.getSongs().addAll(songs);
+        FindSongByComposersDtoResponse response = new FindSongByComposersDtoResponse();
+        response.getSongList().addAll(songs);
         if (songs.size() == 0) {
-            ErrorDtoResponse errorResponse = new ErrorDtoResponse("Composers not found");
-            return mapper.writeValueAsString(errorResponse);
+           throw new Exception("Composers not found");
         }
+
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response);
     }
 
-    private boolean findtSongBySongName(String songName) {
+    public String findSongByAuthor(FindSongByAutorDtoRequest request) throws Exception {
+        List<Song> songs = new ArrayList<Song>();
+
+        User user = userService.getUserByToken(request.getToken());
+        if (user == null) {
+            throw new Exception("User not found");
+        }
+
+        for (Song song : songDao.getSongList()) {
+            if (Arrays.asList(song.getAuthor()).containsAll(Arrays.asList(request.getAuthor()))) {
+                songs.add(song);
+            }
+        }
+
+        if (songs.size() == 0) {
+            throw new Exception("Authors is not found");
+        }
+
+        FindSongByAutorDtoResponse response = new FindSongByAutorDtoResponse();
+        response.getSongList().addAll(songs);
+        return mapper.writeValueAsString(response);
+    }
+
+    private boolean findSongBySongName(String songName) {
         for (Song song : songDao.getSongList()) {
             if (song.getSongName().equalsIgnoreCase(songName)) {
                 return true;
@@ -130,10 +170,10 @@ public class SongService {
     }
 
     private void generateSongId(Song song) {
-        if (db.getSongList().size() != 0) {
-            int newId = db.getSongList().get(db.getSongList().size() - 1).getSongId() + 1;
+        if (songDao.getSongList().size() != 0) {
+            int newId = songDao.getSongList().get(songDao.getSongList().size() - 1).getSongId() + 1;
             song.setSongId(newId);
-        } else return;
+        }
     }
 
 

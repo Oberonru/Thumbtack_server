@@ -17,6 +17,10 @@ public class SongDaoImpl implements SongDao {
         return db.deleteSong(song);
     }
 
+    public Song findSongById(int songId) {
+       return db.findSongById(songId);
+    }
+
     public List<Song> getSongList() {
         return db.getSongList();
     }

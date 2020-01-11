@@ -1,4 +1,3 @@
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import model.User;
 import org.junit.Assert;
@@ -8,8 +7,8 @@ import request.LogInDtoRequest;
 import request.RegisterUserDtoRequest;
 
 public class TestUserService {
-    UserService userService;
-    ObjectMapper mapper;
+    private UserService userService;
+    private ObjectMapper mapper;
 
     @Before
     public void setupUsersrvice() {
@@ -51,7 +50,7 @@ public class TestUserService {
     }
 
     @Test
-    public void test_logOut() throws Exception {
+    public void test_logOut() {
         String requestJsonString = "{\"token\" : \"3c97e287-d38e-43ce-9de2-7c192b98a423\"}";
     }
 

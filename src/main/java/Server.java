@@ -29,7 +29,7 @@ public class Server {
      * Останавливает сервер и записывает все его содержимое в файл сохранения с именем savedDataFileName.
      * Если savedDataFileName == null, запись содержимого не производится.
      */
-    public void stopServer(String savedDataFileName) throws Exception {
+    public void stopServer(String savedDataFileName) {
         isStarted = false;
         db.saveData(savedDataFileName);
     }
@@ -195,6 +195,34 @@ public class Server {
     }
 
     public String getSongByComposers(String requestJsonString) throws Exception {
-        return songService.findSongByComposer(requestJsonString);
+        FindSongByComposersDtoRequest request;
+        try {
+            request = mapper.readValue(requestJsonString, FindSongByComposersDtoRequest.class);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+        try {
+            String response = songService.findSongByComposer(request);
+            return mapper.writeValueAsString(response);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+    }
+
+    public String getSongByAutors(String requestJsonString) throws Exception {
+        FindSongByAutorDtoRequest request;
+
+        try {
+            request = mapper.readValue(requestJsonString, FindSongByAutorDtoRequest.class);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+
+        try {
+            String response = songService.findSongByAuthor(request);
+            return mapper.writeValueAsString(response);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
     }
 }

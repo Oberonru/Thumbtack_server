@@ -1,9 +1,9 @@
 package database;
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import model.*;
-import response.ErrorDtoResponse;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -52,6 +52,7 @@ public class DataBase {
 
     public String deleteSong(Song song) throws Exception {
         List<Comment> songComments = getCommentsBySongId(song.getSongId());
+
         for (User user : userList) {
             if (user.getLogin().equals(song.getLogin())) {
                 if (getRatingsCount(song.getSongId()) == 1 && songComments.size() == 0) {
@@ -59,17 +60,12 @@ public class DataBase {
                     return "{}";
                 }
 
-                /**
-                 * Если же к этому моменту имеются другие оценки этого
-                 *      * предложения, то удаляется лишь оценка этого предложения, сделанная автором предложения (то есть его оценка 5),
-                 *      * а само предложение не удаляется, все остальные оценки сохраняются,
-                 */
                 else {
                     for (Rating rating : ratingList) {
                         if (rating.getLogin().equals(song.getLogin())) {
                             //я прссто удаляю рейтинг, можно засетить автором рейтинга login : progerCommunity, не понятно условие
                             ratingList.remove(rating);
-                            return "{}";
+                            throw new Exception("Song rating is deleted, the user can't delete song");
                         }
                     }
                 }
@@ -80,6 +76,7 @@ public class DataBase {
 
     public void updateRaiting(Rating rating) throws Exception {
         boolean isExsist = false;
+
         for (Rating r : ratingList) {
             if (r.getLogin().equals(rating.getLogin()) && r.getSongId() == rating.getSongId()) {
                 boolean isAutor = rating.getLogin().equals(findSongById(rating.getSongId()).getLogin());
@@ -107,8 +104,6 @@ public class DataBase {
      * механизм применяется ко всем его комментариям, в том числе и тем, к которым никто не присоединился.
      * Радиослушатели, присоединившиеся к комментарию, вправе отказаться от своего присоединения, но не могут
      * изменять текст комментария.
-     *
-     * @param comment
      */
     public void addComment(Comment comment) {
         List<Comment> currentComments = getCommentsBySongId(comment.getSongId());
@@ -121,7 +116,7 @@ public class DataBase {
         }
     }
 
-    private List<Comment> getCommentsBySongId(int songId) {
+    public List<Comment> getCommentsBySongId(int songId) {
         List<Comment> comments = new ArrayList<Comment>();
         for (Comment comment : commentList) {
             if (comment.getSongId() == songId) {
@@ -159,7 +154,7 @@ public class DataBase {
             Rating r = ratingList.get(i);
             if (r.getLogin().equals(rating.getLogin()) && r.getSongId() == rating.getSongId()) {
                 ratingList.remove(r);
-               return;
+                return;
             }
         }
         throw new Exception("Rating cannot be deleted");

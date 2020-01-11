@@ -13,27 +13,22 @@ public class TestSongService {
         server.startServer("songTest.json");
     }
 
-//    @Test
-//    public void test_addSong() throws Exception {
-//        String requestJsonString = "{\"songName\" : \"Murka\", \"composer\" : [\"Mur\", \"Mureh\"]," +
-//                " \"author\" : [\"None\", \"None\"], \"musician\" : \"Ruhum\",  \"songDuration\" : 1," +
-//                " \"token\" : \"1f07e256-e429-4eec-a24a-4b2901eb7cf6\"}";
-//        Assert.assertEquals(songService.addSong(requestJsonString), "{}");
-//        server.stopServer("saveSongTest.json");
-//    }
-
-    //    @Test
-//    public void test_addSong_invalidToken() throws Exception {
-//        String requestJsonString = "{\"songName\" : \"Elochka\", \"composer\" : [\"Zayac\", \"Volk\"]," +
-//                " \"author\" : [\"Volk\", \"Zayac\"], \"musician\" : \"Capel'\",  \"songDuration\" : 5," +
-//                " \"token\" : \"FIG\"}";
-//        Assert.assertEquals("{\"error\":\"User not found\"}", songService.addSong(requestJsonString));
-//    }
-
     @Test
     public void test_deleteSong() throws Exception {
-        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"songId\" : 3}";
+        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"songId\" : 1}"; //gamut удаляет свою песню
         Assert.assertEquals("\"{}\"", server.deleteSong(requestJsonString));
+    }
+
+    @Test
+    public void test_deleteSong_someoneElseSong() throws Exception {
+        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"songId\" : 3}";//гамут удаляте п
+        Assert.assertEquals("{\"error\":\"The user can't delete song\"}", server.deleteSong(requestJsonString));
+    }
+
+    @Test
+    public void test_deleteSong_invalidToken() throws Exception {
+        String requestJsonString = "{\"token\" : \"I Snova FIG\", \"songId\" : 1}";
+        Assert.assertEquals("{\"error\":\"User not found\"}", server.deleteSong(requestJsonString));
     }
 
     /**
@@ -45,37 +40,35 @@ public class TestSongService {
      * по этому же механизму.
      */
     @Test
-    public void test_deleteSong_withSeveralRating() throws Exception {
-        String requestJsonString = "{\"token\" : \"9f0e256-e429-4eec-a24a-4b2901eb00000\", \"songId\" : 1}";//гамут удаляет свою песню
-        Assert.assertEquals("\"{}\"",server.deleteSong(requestJsonString));
-        server.stopServer("saveSongTest.json");
-    }
-
-    @Test
-    public void test_deleteSong_someoneElseSong() throws Exception {
-        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"songId\" : 2}";
-        Assert.assertEquals("{\"error\":\"The user can't delete song\"}", server.deleteSong(requestJsonString));
-    }
-
-    @Test
-    public void test_deleteSong_invalidToken() throws Exception {
-        String requestJsonString = "{\"token\" : \"I Snova FIG\", \"songId\" : 1}";
-        Assert.assertEquals("{\"error\":\"User not found\"}", server.deleteSong(requestJsonString));
-    }
-
-
-
-    @Test
     public void test_deleteSong_moreOneRate() throws Exception {
-        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"songId\" : 1}";
-        Assert.assertEquals("{\"error\":\"The user can't delete song\"}", server.deleteSong(requestJsonString));
+        String requestJsonString = "{\"token\" : \"9f0e256-e429-4eec-a24a-4b2901eb00000\", \"songId\" : 3}";//бурумбум удаляет свою песню на которой есть ещё рейтинг
+        Assert.assertEquals("{\"error\":\"Song rating is deleted, the user can't delete song\"}", server.deleteSong(requestJsonString));
         server.stopServer("saveSongTest.json");
     }
 
+    /**
+     * !!!!!!!!!!!!!
+     * В условии ничего не сказано про удаление песни автором предложения, у которой есть уже комментарий...
+     * Сделал так же как и с удалением песни у котророй более одного рейтинга, те удаляется рейтинг пользователя,
+     * а песня остается
+     */
     @Test
     public void test_deleteSong_withComment() throws Exception {
         String requestJsonString = "{\"token\" : \"1f07e256-e429-4eec-a24a-4b2901eb7cf6\", \"songId\" : 4}";
-        Assert.assertEquals("{\"error\":\"The user can't delete song\"}", server.deleteSong(requestJsonString));
+        Assert.assertEquals("{\"error\":\"Song rating is deleted, the user can't delete song\"}", server.deleteSong(requestJsonString));
+        server.stopServer("saveSongTest.json");
+    }
+
+    @Test
+    public void test_getSongs() throws Exception {
+        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\"}";
+        System.out.println(server.getSongs(requestJsonString));
+    }
+
+    @Test
+    public void test_getSongs_invalidToken() throws Exception {
+        String requestJsonString = "{\"token\" : \"wwww\"}";
+        Assert.assertEquals("{\"error\":\"User not found\"}", server.getSongs(requestJsonString));
     }
 
     @Test
@@ -97,20 +90,27 @@ public class TestSongService {
     }
 
     @Test
-    public void test_findSongByComposers_invalidToken() throws Exception {
+    public void test_findSongByComposers_tokenNotValid() throws Exception {
         String requestJsonString = "{\"token\" : \"ZERO\", \"composers\" : [\"Zayac\", \"Volk\"]}";
         Assert.assertEquals("{\"error\":\"User not found\"}", server.getSongByComposers(requestJsonString));
     }
 
     @Test
-    public void test_getSongs() throws Exception {
-        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\"}";
-        System.out.println(server.getSongs(requestJsonString));
+    public void test_getSongByAutors() throws Exception {
+        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"author\" : [\"RumuMburum\"]}";
+        System.out.println(server.getSongByAutors(requestJsonString));
     }
 
     @Test
-    public void test_getSongs_invalidToken() throws Exception {
-        String requestJsonString = "{\"token\" : \"wwww\"}";
-        Assert.assertEquals("{\"error\":\"User not found\"}", server.getSongs(requestJsonString));
+    public void test_getSongByAutors_notExsist() throws Exception {
+        String requestJsonString = "{\"token\" : \"1f00e256-e429-4eec-a24a-4b2901eb1111\", \"author\" : [\"NO\"]}";
+        Assert.assertEquals("{\"error\":\"Authors is not found\"}", server.getSongByAutors(requestJsonString));
     }
+    @Test
+    public void test_getSongByAutors_tokenNotValid() throws Exception {
+        String requestJsonString = "{\"token\" : \"NONE\", \"author\" : [\"RumuMburum\"]}";
+       Assert.assertEquals("{\"error\":\"User not found\"}", server.getSongByAutors(requestJsonString));
+    }
+
+
 }
