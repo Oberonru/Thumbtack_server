@@ -1,5 +1,11 @@
 {
-  "users" : [ ],
+  "users" : [ {
+    "firstName" : "Uasya",
+    "lastName" : "Pupkin",
+    "login" : "uaSek",
+    "password" : "123s",
+    "token" : null
+  } ],
   "songs" : [ {
     "songName" : "Elochka",
     "composers" : [ "Zayac", "Volk" ],

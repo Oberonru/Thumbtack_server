@@ -63,20 +63,14 @@
   "comments" : [ {
     "id" : 1,
     "login" : "petrucsho",
-    "content" : "Фуфло, а не песня",
-    "songId" : 3,
-    "replyCommentId" : 0
+    "songId" : 3
   }, {
     "id" : 2,
     "login" : "gamut",
-    "content" : "чего гонишь? норм песня!",
-    "songId" : 3,
-    "replyCommentId" : 1
+    "songId" : 3
   }, {
     "id" : 3,
     "login" : "burumbum",
-    "content" : "Да фуфлище полное!!!",
-    "songId" : 3,
-    "replyCommentId" : 1
+    "songId" : 3
   } ]
 }

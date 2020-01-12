@@ -18,29 +18,29 @@ public class TestUserService {
         userService = new UserService();
     }
 
-   @Test
-   public void test_registerUser() throws Exception {
-       String registerUserJson = "{\"firstName\":\"Petro\",\"lastName\":\"First\",\"login\":\"petrucsho\"," +
-               "\"password\":\"3432s3s\"}";
-       RegisterUserDtoRequest request = mapper.readValue(registerUserJson, RegisterUserDtoRequest.class);
-       System.out.println(userService.registerUser(request));
-//       Assert.assertEquals(36, userService.registerUser(request).length());
-   }
-   @Test
-   public void test_registerUser_twoEqualsLogin() throws Exception {
-       String requestJsonString = "{\"firstName\":\"Petro\",\"lastName\":\"First\",\"login\":\"petrucsho\"," +
-               "\"password\":\"3432s3s\"}";
-       RegisterUserDtoRequest request = mapper.readValue(requestJsonString, RegisterUserDtoRequest.class);
-       Assert.assertEquals(36, userService.registerUser(request).length());
-       String requestJsonString2 = "{\"firstName\":\"Boryaha\",\"lastName\":\"Morkovkin\",\"login\":\"petrucsho\"," +
-               "\"password\":\"NNN34\"}";
-       RegisterUserDtoRequest request2 = mapper.readValue(requestJsonString2, RegisterUserDtoRequest.class);
-       try {
-           userService.registerUser(request2);
-       }catch (Exception e) {
-           Assert.assertEquals("Login is already used", e.getMessage());
-       }
-   }
+    @Test
+    public void test_registerUser() throws Exception {
+        String registerUserJson = "{\"firstName\":\"Petro\",\"lastName\":\"First\",\"login\":\"petrucsho\"," +
+                "\"password\":\"3432s3s\"}";
+        RegisterUserDtoRequest request = mapper.readValue(registerUserJson, RegisterUserDtoRequest.class);
+        System.out.println(userService.registerUser(request));
+    }
+
+    @Test
+    public void test_registerUser_twoEqualsLogin() throws Exception {
+        String requestJsonString = "{\"firstName\":\"Petro\",\"lastName\":\"First\",\"login\":\"petrucsho\"," +
+                "\"password\":\"3432s3s\"}";
+        RegisterUserDtoRequest request = mapper.readValue(requestJsonString, RegisterUserDtoRequest.class);
+        Assert.assertEquals(36, userService.registerUser(request).length());
+        String requestJsonString2 = "{\"firstName\":\"Boryaha\",\"lastName\":\"Morkovkin\",\"login\":\"petrucsho\"," +
+                "\"password\":\"NNN34\"}";
+        RegisterUserDtoRequest request2 = mapper.readValue(requestJsonString2, RegisterUserDtoRequest.class);
+        try {
+            userService.registerUser(request2);
+        } catch (Exception e) {
+            Assert.assertEquals("Login is already used", e.getMessage());
+        }
+    }
 
     @Test
     public void test_logIn() throws Exception {
