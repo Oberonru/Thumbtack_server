@@ -2,7 +2,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.CommentDaoImpl;
 import dao.RatingDaoImpl;
 import dao.SongDaoImpl;
-import database.DataBase;
 import model.Comment;
 import model.Rating;
 import model.Song;
@@ -41,11 +40,6 @@ public class SongService {
         return song;
     }
 
-    /**
-     * Радиослушатель добавляет новую песню на сервер. requestJsonString содержит описание песни и token, полученный
-     * как результат выполнения команды регистрации радиослушателя. Метод при успешном выполнении возвращает пустой json
-     * Если же команду почему-то выполнить нельзя, возвращает json с элементом “error”
-     */
     public String addSong(RegisterSongDtoRequest request) throws Exception {
         User user = userService.getUserByToken(request.getToken());
 
@@ -66,10 +60,6 @@ public class SongService {
         return "{}";
     }
 
-    /**
-     * Радиослушатели, сделавшие свое предложение, могут отменить его. Если на момент отмены предложение не получило
-     * * никаких оценок от других радиослушателей, оно удаляется.
-     */
     public String deleteSong(DeleteSongDtoRequest request) throws Exception {
         Song song = songDao.findSongById(request.getSongId());
         User user = userService.getUserByToken(request.getToken());
@@ -92,7 +82,6 @@ public class SongService {
                 else {
                     for (Rating rating : ratingDao.getRatingList()) {
                         if (rating.getLogin().equals(song.getLogin())) {
-                            //я прссто удаляю рейтинг, можно засетить автором рейтинга login : progerCommunity, не понятно условие
                             ratingDao.getRatingList().remove(rating);
                             throw new Exception("Song rating is deleted, the user can't delete song");
                         }

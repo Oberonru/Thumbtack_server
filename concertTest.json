@@ -25,7 +25,7 @@
     "composers" : [ "Zayac", "Volk" ],
     "author" : [ "Volk", "Zayac" ],
     "musician" : "Capel'",
-    "songDuration" : 5.0,
+    "songDuration" : 3500.0,
     "login" : "gamut",
     "songId" : 1
   }, {
@@ -33,7 +33,7 @@
     "composers" : [ "BBBB", "AAAA" ],
     "author" : [ "CCC", "DDD" ],
     "musician" : "Songer",
-    "songDuration" : 1.0,
+    "songDuration" : 1000.0,
     "login" : "tolyan",
     "songId" : 2
   }, {

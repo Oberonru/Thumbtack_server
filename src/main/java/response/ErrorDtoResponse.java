@@ -6,7 +6,4 @@ public class ErrorDtoResponse {
     public ErrorDtoResponse(String error) {
         this.error = error;
     }
-
-    public ErrorDtoResponse() {
-    }
 }

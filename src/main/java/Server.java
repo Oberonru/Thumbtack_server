@@ -11,28 +11,18 @@ public class Server {
 
     private UserService userService = new UserService();
     private SongService songService = new SongService();
-    private RaitingService raitingService = new RaitingService();
+    private RatingService ratingService = new RatingService();
     private CommentService commentService = new CommentService();
-    private ConcertProgrammService concertProgramm = new ConcertProgrammService();
+    private ConcertProgramService concertProgramm = new ConcertProgramService();
     private DataBase db = DataBase.getInstance();
     private boolean isStarted;
     private ObjectMapper mapper = new ObjectMapper();
-
-    /**
-     * Производит всю необходимую инициализацию и запускает сервер.
-     * savedDataFileName - имя файла, в котором было сохранено состояние сервера.  Если savedDataFileName == null,
-     * восстановление состояния не производится, сервер стартует “с нуля”.
-     */
 
     public void startServer(String savedDataFileName) {
         db.loadDataToCache(savedDataFileName);
         isStarted = true;
     }
 
-    /**
-     * Останавливает сервер и записывает все его содержимое в файл сохранения с именем savedDataFileName.
-     * Если savedDataFileName == null, запись содержимого не производится.
-     */
     public void stopServer(String savedDataFileName) {
         isStarted = false;
         db.saveData(savedDataFileName);
@@ -139,7 +129,7 @@ public class Server {
         }
 
         try {
-            String response = raitingService.addRaiting(request);
+            String response = ratingService.addRaiting(request);
             return mapper.writeValueAsString(response);
         } catch (Exception e) {
             return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
@@ -156,7 +146,7 @@ public class Server {
         }
 
         try {
-            String response = raitingService.deleteRating(request);
+            String response = ratingService.deleteRating(request);
             return mapper.writeValueAsString(response);
         } catch (Exception e) {
             return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
@@ -256,6 +246,22 @@ public class Server {
         try {
             List<SongForConcertModel> modelList = concertProgramm.getConcertProgram(request);
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(modelList);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
+        }
+    }
+
+    public String exitToServer(String requestJsonString) throws Exception {
+        ExitToServerDtoRequest request;
+        try {
+            request = mapper.readValue(requestJsonString, ExitToServerDtoRequest.class);
+        } catch (Exception e) {
+            return mapper.writeValueAsString(new ErrorDtoResponse("Data is not valid"));
+        }
+
+        try {
+            String response = userService.exitToServer(request);
+            return mapper.writeValueAsString(response);
         } catch (Exception e) {
             return mapper.writeValueAsString(new ErrorDtoResponse(e.getMessage()));
         }

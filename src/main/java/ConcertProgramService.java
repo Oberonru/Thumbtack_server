@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class ConcertProgrammService {
+public class ConcertProgramService {
 
     private UserService userService = new UserService();
     private RatingDaoImpl ratingDao = new RatingDaoImpl();
@@ -42,15 +42,27 @@ public class ConcertProgrammService {
             songForConcert.setFirstName(user.getFirstName());
             songForConcert.setLastName(user.getLastName());
             songForConcert.getComments().addAll(commentDao.getCommentsBySongId(song.getSongId()));
-
             concertProgram.add(songForConcert);
         }
 
         Collections.sort(concertProgram, COMPARE_BY_AVERAGE_RATING);
 
-        //todo: далее
+        List<SongForConcertModel> result;
+        result = composeConcert(concertProgram, 3600);
+        return result;
+    }
 
-        return concertProgram;
+    private List<SongForConcertModel> composeConcert(List<SongForConcertModel> concertSongList, int duration) {
+        List<SongForConcertModel> result = new ArrayList<SongForConcertModel>();
+        int concertTime = 0;
+        for (SongForConcertModel songForConcertModel : concertSongList) {
+            if (concertTime + songForConcertModel.getSongDuration() + 10 < duration) {
+                result.add(songForConcertModel);
+                concertTime += songForConcertModel.getSongDuration() + 10;
+            }
+        }
+
+        return result;
     }
 
     private static final Comparator<SongForConcertModel> COMPARE_BY_AVERAGE_RATING = new Comparator<SongForConcertModel>() {

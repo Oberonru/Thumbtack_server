@@ -67,12 +67,4 @@ public class Song {
     public int getSongId() {
         return songId;
     }
-
-//    public int getSongRating() {
-//        return songRaiting;
-//    }
-//
-//    public void setSongRating(int songRaiting) {
-//        this.songRaiting = songRaiting;
-//    }
 }

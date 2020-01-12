@@ -1,6 +1,6 @@
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.UserDaoImpl;
 import model.User;
+import request.ExitToServerDtoRequest;
 import request.LogInDtoRequest;
 import request.LogOutDtoRequest;
 import request.RegisterUserDtoRequest;
@@ -11,16 +11,6 @@ import java.util.UUID;
 
 public class UserService {
     private UserDaoImpl userDao = new UserDaoImpl();
-    private ObjectMapper mapper = new ObjectMapper();
-
-    /**
-     * Регистрирует радиослушателя на сервере. requestJsonString содержит данные о радиослушателе, необходимые для
-     * регистрации.  Метод при успешном выполнении возвращает json с единственным элементом “token”. Если же команду по
-     * какой-то причине выполнить нельзя, возвращает json с элементом “error”
-     * При регистрации (метод registerUser) радиослушателя возвращаемая строка (при успешном выполнении)
-     * должна обязательно содержать поле “token” - уникальный номер, присвоенный этому радиослушателю
-     * в результате регистрации.
-     */
 
     public String registerUser(RegisterUserDtoRequest request) throws Exception {
         if (validateParams(
@@ -42,10 +32,6 @@ public class UserService {
         return newUser.getToken();
     }
 
-    /**
-     * и радиослушатель, вышедший с сервера, входит на него снова (метод login), он получает новый токен, который может
-     * использовать во всех операциях вплоть до нового выхода.
-     */
     public String logIn(LogInDtoRequest request) throws Exception {
         User user = getUserByLogin(request.getLogin(), request.getPassword());
 
@@ -61,13 +47,6 @@ public class UserService {
         return "{}";
     }
 
-    /**
-     * Зарегистрированный на сервере радиослушатель может выйти с сервера. Вышедший с сервера радиослушатель может
-     * войти на сервер снова. При этом ему достаточно ввести свои логин и пароль.
-     * Зарегистрированный на сервере радиослушатель может покинуть сервер, в этом случае вся информация о нем удаляется
-     * <p>
-     */
-
     public String logOut(LogOutDtoRequest logOutRequest) throws Exception {
         User user = getUserByToken(logOutRequest.getToken());
         if (user == null) {
@@ -79,12 +58,20 @@ public class UserService {
         return "{}";
     }
 
-    /**
-     * Зарегистрированный на сервере радиослушатель может покинуть сервер, в этом случае вся информация о нем
-     * удаляется, а список сделанных им предложений обрабатывается как указано ниже.
-     */
-    public String exitToServer(String requestJsonString) {
-        return "fig";
+    public String exitToServer(ExitToServerDtoRequest request) throws Exception {
+        User user = getUserByToken(request.getToken());
+
+        if (user == null) {
+            throw new Exception("User not found");
+        }
+
+        for (User person : userDao.getUserList()) {
+            if (person.getToken().equals(request.getToken())) {
+                userDao.getUserList().remove(person);
+                break;
+            }
+        }
+        return "{}";
     }
 
     public User createUserWithToken(String firstName, String lastName, String login, String password) {
@@ -124,11 +111,6 @@ public class UserService {
         return null;
     }
 
-    public boolean verifyToken(String token) {
-        User user = getUserByToken(token);
-        return user != null;
-    }
-
     private String generateToken() {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
@@ -136,10 +118,10 @@ public class UserService {
 
     private List<String> validateParams(String firstName, String lastName, String login, String password) {
         List<String> errors = new ArrayList<String>();
-        if (!validateName(firstName)) {
+        if (!isValidName(firstName)) {
             errors.add("firstName is not valid");
         }
-        if (!validateName(lastName)) {
+        if (!isValidName(lastName)) {
             errors.add("last name is not valid");
         }
         if (getUserByLogin(login, password) != null) {
@@ -148,7 +130,7 @@ public class UserService {
         return errors;
     }
 
-    private boolean validateName(String name) {
+    private boolean isValidName(String name) {
         return name != null && name.length() > 2 && name.length() < 60;
     }
 }

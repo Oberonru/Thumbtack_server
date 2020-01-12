@@ -16,7 +16,7 @@ public class TestServer {
     }
 
     @Test
-    public void test_startServer() throws Exception {
+    public void test_startServer() {
         UserDaoImpl userDao = new UserDaoImpl();
         SongDaoImpl songDao = new SongDaoImpl();
         RatingDaoImpl ratingDao = new RatingDaoImpl();
@@ -30,13 +30,13 @@ public class TestServer {
     }
 
     @Test
-    public void test_startServer_fileNull() throws Exception {
+    public void test_startServer_fileNull() {
         server.startServer(null);
         server.stopServer("saveTestServerData.json");
     }
 
     @Test
-    public void test_startServer_fileEmpty() throws Exception {
+    public void test_startServer_fileEmpty() {
         server.startServer("emptyFile.json");
         server.stopServer("saveTestServerData.json");
     }
@@ -48,8 +48,6 @@ public class TestServer {
                 "\"password\":\"321\"}";
         Assert.assertEquals(server.registerUser(requestJsonString), "{\"error\":\"Server is not started!\"}");
     }
-
-    //todo: надо ли делать тест в котором сам файл( сейчас testServerData.json") корявый? те данные в нём с ошибкой?
 
     @Test
     public void test_registerUser() throws Exception {
@@ -214,5 +212,13 @@ public class TestServer {
         server.startServer("testServerData.json");
         String registerUserJson = "{\"firstName\":\"Petro\",\"lastName\":\"First\",\"login\":\"petrucsho\"}";
         Assert.assertEquals("{\"error\":\"Data is not valid\"}", server.addSong(registerUserJson));
+    }
+
+    @Test
+    public void tes_exitToServer() throws Exception {
+        server.startServer("testServerData.json");
+        String requestJsonString = "{\"token\" : \"a6acedd8-213f-4018-b61f-d4b1a0a78418\"}";
+        Assert.assertEquals("\"{}\"", server.exitToServer(requestJsonString));
+        server.stopServer("saveTestServerData.json");
     }
 }

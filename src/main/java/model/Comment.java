@@ -23,10 +23,6 @@ public class Comment {
         this.login = login;
     }
 
-    public String getContent() {
-        return content;
-    }
-
     public void setContent(String content) {
         this.content = content;
     }
@@ -41,10 +37,6 @@ public class Comment {
 
     public int getId() {
         return id;
-    }
-
-    public int getReplyCommentId() {
-        return replyCommentId;
     }
 
     public void setReplyCommentId(int replyCommentId) {

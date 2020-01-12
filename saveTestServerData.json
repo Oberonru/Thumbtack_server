@@ -1,17 +1,5 @@
 {
-  "users" : [ {
-    "firstName" : "Uasya",
-    "lastName" : "Pupkin",
-    "login" : "uaSek",
-    "password" : "123s",
-    "token" : "a6acedd8-213f-4018-b61f-d4b1a0a78418"
-  }, {
-    "firstName" : "Petro",
-    "lastName" : "First",
-    "login" : "petrucsho",
-    "password" : "3432s3s",
-    "token" : "cc52c8dc-75f2-49de-a129-94ad8890ff4d"
-  } ],
+  "users" : [ ],
   "songs" : [ {
     "songName" : "Elochka",
     "composers" : [ "Zayac", "Volk" ],

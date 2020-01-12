@@ -16,10 +16,6 @@ public class CommentDtoRequest {
         return content;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public int getSongId() {
         return songId;
     }
